@@ -1,0 +1,110 @@
+{
+  "FIDALWORDS": [
+    {
+      "FID": "በስመ",
+      "Id": "Wf2e5da2f-322e-4eab-94df-19c2487220c3",
+      "FIDED": "በስመ<font color='black'>፡</font><font color='blue'></font>",
+      "FC": [
+        {
+          "LL": [
+            {
+              "LAT": "b",
+              "Tid": "T0>Wf2e5da2f-322e-4eab-94df-19c2487220c3"
+            },
+            {
+              "LAT": "a",
+              "Tid": "T0>Wf2e5da2f-322e-4eab-94df-19c2487220c3"
+            }
+          ],
+          "TRFID": "ba",
+          "FIDLETED": "በ",
+          "FIDLET": "በ"
+        },
+        {
+          "LL": [
+            {
+              "LAT": "s",
+              "Tid": "T1>Wf2e5da2f-322e-4eab-94df-19c2487220c3"
+            },
+            {
+              "LAT": "ǝ",
+              "Tid": "T1>Wf2e5da2f-322e-4eab-94df-19c2487220c3"
+            }
+          ],
+          "TRFID": "sǝ",
+          "FIDLETED": "ስ",
+          "FIDLET": "ስ"
+        },
+        {
+          "LL": [
+            {
+              "LAT": "m",
+              "Tid": "T1>Wf2e5da2f-322e-4eab-94df-19c2487220c3"
+            },
+            {
+              "LAT": "a",
+              "Tid": "T1>Wf2e5da2f-322e-4eab-94df-19c2487220c3"
+            }
+          ],
+          "TRFID": "ma",
+          "FIDLETED": "መ",
+          "FIDLET": "መ፡"
+        }
+      ],
+      "TR": "ba-sǝma",
+      "Tid": [
+        "T0>Wf2e5da2f-322e-4eab-94df-19c2487220c3",
+        "T1>Wf2e5da2f-322e-4eab-94df-19c2487220c3"
+      ],
+      "Sid": [
+        {
+          "1": "Dd3a9b843-0b8f-474c-a797-c63c38cb3371"
+        }
+      ]
+    },
+    {
+      "FID": "አብ",
+      "Id": "Wd5067cb3-4640-454a-893f-f1a44e71b26b",
+      "FIDED": "አብ<font color='black'>፡</font><font color='blue'></font>",
+      "FC": [
+        {
+          "LL": [
+            {
+              "LAT": "ʾ",
+              "Tid": "T0>Wd5067cb3-4640-454a-893f-f1a44e71b26b"
+            },
+            {
+              "LAT": "a",
+              "Tid": "T0>Wd5067cb3-4640-454a-893f-f1a44e71b26b"
+            }
+          ],
+          "TRFID": "ʾa",
+          "FIDLETED": "አ",
+          "FIDLET": "አ"
+        },
+        {
+          "LL": [
+            {
+              "LAT": "b",
+              "Tid": "T0>Wd5067cb3-4640-454a-893f-f1a44e71b26b"
+            }
+          ],
+          "TRFID": "b",
+          "FIDLETED": "ብ",
+          "FIDLET": "ብ፡"
+        }
+      ],
+      "TR": "ʾab",
+      "Tid": [
+        "T0>Wd5067cb3-4640-454a-893f-f1a44e71b26b"
+      ],
+      "Sid": [
+        {
+          "1": "Dd3a9b843-0b8f-474c-a797-c63c38cb3371"
+        }
+      ]
+    }
+  ],
+  "SCR": 0,
+  "TR": 0
+}

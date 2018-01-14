@@ -52,7 +52,7 @@ public class GeTaMapperTest {
 	@Before
 	public void setUp() throws Exception {
 		GeTaMapper mapper = new GeTaMapper();
-		File file = new File(this.getClass().getClassLoader().getResource("test_PoSEA.json").getFile());
+		File file = new File(this.getClass().getClassLoader().getResource("testEA.json").getFile());
 		String path = file.getAbsolutePath();
 		mapper.setResourceURI(URI.createFileURI(path));
 		SDocument doc = SaltFactory.createSDocument();
@@ -77,11 +77,11 @@ public class GeTaMapperTest {
 	public void testDocumentHasMetaAnnotations() {
 		getFixture().mapSDocument();
 		assertNotNull(getFixture().getDocument().getMetaAnnotation("GeTa::SCR"));
-		assertNotNull(getFixture().getDocument().getMetaAnnotation("GeTa::DTR"));
+		assertNotNull(getFixture().getDocument().getMetaAnnotation("GeTa::TR"));
 		assertEquals("SCR", getFixture().getDocument().getMetaAnnotation("GeTa::SCR").getName());
-		assertEquals("0", getFixture().getDocument().getMetaAnnotation("GeTa::SCR").getValue());
-		assertEquals("DTR", getFixture().getDocument().getMetaAnnotation("GeTa::DTR").getName());
-		assertEquals("0", getFixture().getDocument().getMetaAnnotation("GeTa::DTR").getValue());
+		assertEquals(0, getFixture().getDocument().getMetaAnnotation("GeTa::SCR").getValue());
+		assertEquals("TR", getFixture().getDocument().getMetaAnnotation("GeTa::TR").getName());
+		assertEquals(0, getFixture().getDocument().getMetaAnnotation("GeTa::TR").getValue());
 	}
 
 	/**
