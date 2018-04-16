@@ -76,38 +76,225 @@ import de.uni_hamburg.traces.peppermodules.model.tea.GeTaTEAAnn;
 public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 
 	private static final Logger logger = LoggerFactory.getLogger(GeTaMapper.class);
-	private static final String SCR = "SCR";
-	private static final String TR = "TR";
-	private static final String FID = "FID";
-	private static final String FIDED = "FIDED";
-	private static final String FIDEDh = "FIDEDh";
-	private static final String TRFID = "TRFID";
-	private static final String FIDLETED = "FIDLETED";
-	private static final String FIDLET = "FIDLET";
-	private static final String TID = "Tid";
-	private static final String SID = "Sid";
+	
+	/*
+	 * ██╗  ██╗███████╗██╗   ██╗███████╗
+	 * ██║ ██╔╝██╔════╝╚██╗ ██╔╝██╔════╝
+	 * █████╔╝ █████╗   ╚████╔╝ ███████╗
+	 * ██╔═██╗ ██╔══╝    ╚██╔╝  ╚════██║
+	 * ██║  ██╗███████╗   ██║   ███████║
+	 * ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝
+	 */
+	// ███ Graphical unit annotations ███
+	/** Transcription vocalisation */
+	public static final String TR = "TR";
+	/** Original script type */
+	public static final String SCR = "SCR";
+	
+	// █ FIDALWORD (= GeTaWord) annotations █
+	/** Graphical unit id */
+	public static final String ID = "ID";
+	/** Ge'ez word */
+	public static final String FID = "FID";
+	/** Ge'ez word with editorial markers */
+	public static final String FIDED = "FIDED";
+	/** Custom key for HTML rendering of FIDED values */
+	public static final String FIDEDh = "FIDEDh";
+	// Latin script transcription
+	// Duplicate key TR is already accounted for above under Graphical unit annotations
+	/** List of ids for division objects */
+	public static final String Sid = "Sid";
+	/** List of ids for quotation objects */
+	public static final String Qid = "Qid";
+	/** List of ids for token objects */
+	public static final String Tid = "Tid";
+	/** Named entity id which this word is a part of */
+	public static final String NE = "NE";
+	/** Comment */
+	public static final String Comm = "Comm";
+	
+	/* 
+	 * █ FIDALWORD > FC █
+	 * Fidal letter annotations
+	 */
+	/** Fidal letter */
+	public static final String FIDLET = "FIDLET";
+	/** Fidal letter with editorial markers */
+	public static final String FIDLETED = "FIDLETED";
+	/** Latin transcription of fidal letter */
+	public static final String TRFID = "TRFID";
+	/** Line break number */
+	public static final String pLB = "pLB";
+	/** Page break number */
+	public static final String pPB = "pPB";
+	/** Editorial annotations */
+	public static final String edAnnot = "edAnnot";
+		
+	/* 
+	 * █ FIDALWORD > FC > LL █
+	 * Latin letter annotations
+	 */
+	/** Latin letter transliteration of fidal letter */
+	public static final String LAT = "LAT";
+	/** Token id for the latin letter */
+	// Duplicate key Tid is already accounted for above under FIDALWORD annotations
+	
+	// ███ Token annotations ███
+	/** Token Id */
+	public static final String Id = "Id";
+	/** Token label */
+	public static final String TOKL = "TOKL";
+	/** Id of the named entity to which a token belongs */
+	public static final String NEId = "NEId";
+	
+	/*
+	 * █ Token annotations > M █
+	 * Morphological token annotations
+	 */
+	/** Whether the token can be part of a named entity */
+	public static final String ne = "ne";
+	
+	/*
+	 * █ Token annotations > M > LT █
+	 * Morphological token annotation tags
+	 */
+	/** Tag name */
+	public static final String NT = "NT";
+
+	/*
+	 * █ Token annotations > M > LT > AL █
+	 * Morphological token annotation tag values
+	 */
+	/** Gender PATTERN for nominals and numbers */
+	public static final String N1 = "N1";
+	/** Value of the gender PATTERN */
+	public static final String V1 = "V1";
+	/** Gender SYNTAX for nominals and numbers */
+	public static final String N2 = "N2";
+	/** Value of the gender SYNTAX */
+	public static final String V2 = "V2";
+	/** Gender NATURE for nominals and numbers */
+	public static final String N3 = "N3";
+	/** Value of the gender NATURE */
+	public static final String V3 = "V3";
+	/** Attribute name for all but the three above */
+	public static final String N = "N";
+	/** Attribute value for all but the three above */
+	public static final String V = "V";
+	
+	// ███ Division annotations ███
+	// Division Id
+	// Duplicate key Id is already accounted for above under token annotations
+	/** Id of the word starting the division */
+	public static final String WB = "WB";
+	/** Id of the word ending the division */
+	public static final String WE = "WE";
+	/** Internal number */
+	public static final String NRI = "NRI";
+	/** User-defined number */
+	public static final String NR = "NR";
+	/** Division level (1-4) */
+	public static final String LE = "LE";
+	/** Division genre */
+	public static final String G = "G";
+	/** Division comment */
+	public static final String C = "C";
+	/** Id of parent division */
+	public static final String DP ="DP";
+	/** Division name */
+	public static final String  NA = "NA";
+	/** Creator */
+	public static final String CR = "CR";
+	/** Id header begin */
+	public static final String  HWB = "HWB";
+	/** Id header end */
+	public static final String  HWE = "HWE";
+	/** List of ids of children divisions */
+	public static final String DC = "DC";
+	
+	// ███ Named entity annotations ███
+	// NE Id
+	// Duplicate key Id is already accounted for above under token annotations
+	/** Type of NE */
+	public static final String  T = "T";
+	/** List of objects pointing to which tokens and graphical units belong to this NE */
+	public static final String ref = "ref";
+	/** List of other NE features */
+	public static final String feat = "feat";
+	/** Word id in a RefWord object */
+	public static final String WID = "WID";
+	/** List of Ids of tokens in the graphical unit with a WID occurring in the NE */
+	public static final String TID = "TID";
+		
+	// ███ Metadata annotations ███
+	// Document Id in CLAVIS of Beta-masaheft server 
+	// Duplicate key Id is already accounted for above under token annotations
+	/** Annotator name */
+	public static final String ANNOT = "ANNOT";
+	/** Tool name incl. version and author */
+	public static final String SOFT = "SOFT";
+	/** Document name */
+	public static final String NAME = "NAME";
+	/** Document language */
+	public static final String  LANG = "LANG";
+	/** Document date */
+	public static final String DATE = "DATE";
+	/** Zotero link to edition */
+	public static final String EDITION = "EDITION";
+	/** List of highest level division included in the document */
+	public static final String PARTS = "PARTS";
+	// TR already included in FIDALWORDS annotations
+	// SCR already included in FIDALWORDS annotations
+	// Comment
+	// Comm already included elsewhere
+	
+	// ███ Quotation annotations ███
+	// Quotation id
+	// Duplicate key ID is already accounted for above under graphical unit annotations
+	/** Reference to the work */
+	public static final String REF = "REF";
+	/** Id of quotation beginning */
+	public static final String QWB = "QWB";
+	/** Id of quotation end */
+	public static final String QWE = "QWE";
+	
+	// ###### END KEYS ########
+	
+	/*
+	 * Metadata
+	 */
+	// GeTa prefix
 	private static final String TRACES = "GeTa";
-	private static final String TRACESED = "GeTa_Ed";
-	private static final String TRACESSID = "GeTa_S";
-	private static final String AL = "AL";
-	private static final String p = "p";
-	private static final String aut = "aut";
-	private static final String c = "c";
-	private static final String g = "g";
-	private static final String ne = "ne";
-	private static final String NT = "NT";
-	private static final String LE = "Le";
-	private static final String COMMENT = "Comm";
-	private static final String TOKL = "TOKL";
+	
+	/*
+	 * FILES
+	 */
+	// Main file
 	private static final String JSON_FILE_SUFFIX = "EA";
+	// Token file
 	private static final String TEA_FILE_SUFFIX = "TEA";
+	// Divisions file
 	private static final String DEA_FILE_SUFFIX = "DEA";
+	// Named Entities file
+	private static final String NEA_FILE_SUFFIX = "NEA";
+	// Quotations file
+	private static final String QEA_FILE_SUFFIX = "QEA";
+	// Metadata file
+	private static final String MetaEA_FILE_SUFFIX = "MetaEA";
 	private static final String ANN_FILE_ENDING = "ann";
+	private static final String JSON_FILE_ENDING = "json";
+	
+	/*
+	 * OBJECTS
+	 */
 	private final Map<String, GeTaTEAAnn> tEAannMap = new HashMap<>();
 	private final Map<String, GeTaDEAAnn> dEAannMap = new HashMap<>();
 	private JsonParser jsonParser = null;
 	private boolean mapTEA = true;
 	private boolean mapDEA = true;
+	private boolean mapNEA = true;
+	private boolean mapQEA = true;
+	private boolean mapMetaEA = true;
 	private static final String TRACES_NAMESPACE = "GeTa"; 
 
 	/*
@@ -142,46 +329,27 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 		URI resource = getResourceURI();
 		String path = resource.toFileString();
 		String tEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(TEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
-		String dEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(DEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
+		String dEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(DEA_FILE_SUFFIX + "." + JSON_FILE_ENDING);
+		String nEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(NEA_FILE_SUFFIX + "." + JSON_FILE_ENDING);
+		String qEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(QEA_FILE_SUFFIX + "." + JSON_FILE_ENDING);
+		String metaEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(MetaEA_FILE_SUFFIX + "." + JSON_FILE_ENDING);
 		File jsonFile = new File(path);
+		
+		// Check what files to map
 		File tEAannFile = new File(tEAPath);
-		if (!tEAannFile.exists()) {
-			throw new PepperModuleException("Could not find the TEA.ann file at " + tEAPath + "!");
-		}
-		try (BufferedReader br = new BufferedReader(new FileReader(tEAannFile))){
-			String rl = br.readLine();
-			if (rl == null) {
-				logger.error("No TEA.ann file found or file is empty!");
-				mapTEA = false;
-			}
-			else if (rl.isEmpty()) {
-				logger.error("TEA.ann file is empty!");
-				mapTEA = false;
-			}
-		}
-		catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}     
-		File dEAannFile = new File(dEAPath);
-		if (!dEAannFile.exists()) {
-			throw new PepperModuleException("Could not find the DEA.ann file at " + dEAPath + "!");
-		}
-		try (BufferedReader br = new BufferedReader(new FileReader(dEAannFile))){
-			String rl = br.readLine();
-			if (rl == null) {
-				logger.error("No DEA.ann file found or file is empty!");
-				mapDEA = false;
-			}
-			else if (rl.isEmpty()) {
-				logger.error("DEA.ann file is empty!");
-				mapDEA = false;
-			}
-		}
-		catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}     
+		mapTEA = checkFileExists(tEAannFile, tEAPath);
+		
+		File dEAFile = new File(dEAPath);
+		mapDEA = checkFileExists(dEAFile, dEAPath);
+		
+//		File nEAFile = new File(nEAPath);
+//		mapNEA = checkFileExists(nEAFile, nEAPath);
+//		
+//		File qEAFile = new File(qEAPath);
+//		mapQEA = checkFileExists(qEAFile, qEAPath);
+//		
+//		File metaEAFile = new File(metaEAPath);
+//		mapMetaEA = checkFileExists(metaEAFile, metaEAPath);
 		
 		// Initiate the mapping process for .json and .ann files
 		try {
@@ -189,9 +357,19 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			ObjectMapper tEAMapper = new ObjectMapper();
 			tEAMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
 			ObjectMapper dEAMapper = new ObjectMapper();
+			tEAMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
+//			ObjectMapper nEAMapper = new ObjectMapper();
+//			tEAMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
+//			ObjectMapper qEAMapper = new ObjectMapper();
+//			tEAMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
+//			ObjectMapper metaEAMapper = new ObjectMapper();
+//			metaEAMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
 			GeTaJson json;
 			List<GeTaTEAAnn> tEAanns = null;
 			List<GeTaDEAAnn> dEAanns = null;
+//			List<GeTaDEAAnn> nEAanns = null;
+//			List<GeTaDEAAnn> qEAanns = null;
+//			List<GeTaDEAAnn> metaEAanns = null;
 			try {
 				json = jsonMapper.readValue(jsonFile, new TypeReference<GeTaJson>() {
 				});
@@ -199,8 +377,17 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 					tEAanns = tEAMapper.readValue(tEAannFile, new TypeReference<List<GeTaTEAAnn>>() {
 					});
 				if (mapDEA)
-					dEAanns = dEAMapper.readValue(dEAannFile, new TypeReference<List<GeTaDEAAnn>>() {
+					dEAanns = dEAMapper.readValue(dEAFile, new TypeReference<List<GeTaDEAAnn>>() {
 					});
+//				if (mapNEA)
+//					nEAanns = nEAMapper.readValue(nEAFile, new TypeReference<List<GeTaNEAAnn>>() {
+//					});
+//				if (mapQEA)
+//					qEAanns = qEAMapper.readValue(qEAFile, new TypeReference<List<GeTaQEAAnn>>() {
+//					});
+//				if (mapMetaEA)
+//					metaEAanns = metaEAMapper.readValue(metaEAFile, new TypeReference<List<GeTaMetaEAAnn>>() {
+//					});
 			}
 			catch (JsonMappingException | JsonParseException e) {
 				logger.error("Error while parsing JSON.", e);
@@ -216,6 +403,21 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 					dEAannMap.put(dEAann.getId(), dEAann);
 				}
 			}
+//			if (mapNEA) {
+//				for (GeTaNEAAnn nEAann : nEAanns) {
+//					nEAannMap.put(nEAann.getId(), nEAann);
+//				}
+//			}
+//			if (mapQEA) {
+//				for (GeTaQEAAnn qEAann : qEAanns) {
+//					qEAannMap.put(qEAann.getId(), qEAann);
+//				}
+//			}
+//			if (mapMetaEA) {
+//				for (GeTaMetaEAAnn metaEAann : metaEAanns) {
+//					metaEAannMap.put(metaEAann.getId(), metaEAann);
+//				}
+//			}
 
 			/*
 			 * ############################ 
@@ -229,6 +431,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			List<SSpan> annoSpans = new ArrayList<>();
 			SSpan objectAnnoSpan = null, objectBasicAnnoSpan = null, tRSpan = null, fIDEDSpan = null;
 			Map<String, List<SToken>> tid2TokMap = new HashMap<>();
+			// GeTaWord = entity in FIDALWORDS array
 			Map<String, List<GeTaWord>> sid2WordsMap = new HashMap<>();
 
 			// Iterate through all GeTaWords and map accordingly
@@ -257,40 +460,40 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 					SSpan annoSpan = graph.createSpan(tokList);
 					annoSpans.add(annoSpan);
 					SSpan basicAnnoSpan = graph.createSpan(tokList);
-					SSpan edAnnoSpan = graph.createSpan(tokList);
+//					SSpan edAnnoSpan = graph.createSpan(tokList);
 					annoSpan.createAnnotation(TRACES_NAMESPACE, FIDLETED, fc.getFIDLETED());
 					annoSpan.createAnnotation(TRACES_NAMESPACE, TRFID, fc.getTRFID());
 					annoLayer.addNode(annoSpan);
 					basicAnnoSpan.createAnnotation(TRACES_NAMESPACE, FIDLET, fc.getFIDLET());
 					basicAnnoLayer.addNode(basicAnnoSpan);
-					edLayer.addNode(edAnnoSpan);
-					for (GeTaEd ed : fc.getEDs()) {
-						edAnnoSpan.createAnnotation(TRACESED, aut, ed.getAUT());
-						edAnnoSpan.createAnnotation(TRACESED, c, ed.getC());
-						edAnnoSpan.createAnnotation(TRACESED, g, ed.getG());
-						edAnnoSpan.createAnnotation(TRACESED, ne, ed.getNE());
-						edAnnoSpan.createAnnotation(TRACESED, p, ed.getP());
-						for (GeTaLT lt : ed.getLTs()) {
-							SAnnotation nTanno;
-							if ((nTanno = edAnnoSpan.getAnnotation(TRACESED + "::" + NT)) == null) {
-								edAnnoSpan.createAnnotation(TRACESED, NT, lt.getNT());
-							}
-							else {
-								String oldValue = nTanno.getValue_STEXT();
-								nTanno.setValue(oldValue + ", " + lt.getNT());
-							}
-							for (GeTaAL al : lt.getALs()) {
-								for (String[] nv : al.getNVs()) {
-									try {
-										edAnnoSpan.createAnnotation(TRACESED + "_" + AL, nv[0], nv[1]);
-									}
-									catch (SaltInsertionException e) {
-										throw new PepperModuleException("Error in document " + getDocument().getName() + " for token " + word.getID() + ": Cannot insert annotation \"" + nv[0] + "\" because it already exists!", e);
-									}
-								}
-							}
-						}
-					}
+//					edLayer.addNode(edAnnoSpan);
+//					for (GeTaEd ed : fc.getEDs()) {
+//						edAnnoSpan.createAnnotation(TRACESED, aut, ed.getAUT());
+//						edAnnoSpan.createAnnotation(TRACESED, c, ed.getC());
+//						edAnnoSpan.createAnnotation(TRACESED, g, ed.getG());
+//						edAnnoSpan.createAnnotation(TRACESED, ne, ed.getNE());
+//						edAnnoSpan.createAnnotation(TRACESED, p, ed.getP());
+//						for (GeTaLT lt : ed.getLTs()) {
+//							SAnnotation nTanno;
+//							if ((nTanno = edAnnoSpan.getAnnotation(TRACESED + "::" + NT)) == null) {
+//								edAnnoSpan.createAnnotation(TRACESED, NT, lt.getNT());
+//							}
+//							else {
+//								String oldValue = nTanno.getValue_STEXT();
+//								nTanno.setValue(oldValue + ", " + lt.getNT());
+//							}
+//							for (GeTaAL al : lt.getALs()) {
+//								for (String[] nv : al.getNVs()) {
+//									try {
+//										edAnnoSpan.createAnnotation(TRACESED + "_" + AL, nv[0], nv[1]);
+//									}
+//									catch (SaltInsertionException e) {
+//										throw new PepperModuleException("Error in document " + getDocument().getName() + " for token " + word.getID() + ": Cannot insert annotation \"" + nv[0] + "\" because it already exists!", e);
+//									}
+//								}
+//							}
+//						}
+//					}
 				}
 				if (!annoSpans.isEmpty()) {
 					List<SToken> annoSpanTokens = new ArrayList<>();
@@ -307,7 +510,11 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 					objectBasicAnnoSpan = graph.createSpan(annoSpanTokens);
 					objectBasicAnnoSpan.createAnnotation(TRACES, FID, word.getFID());
 					objectBasicAnnoSpan.createAnnotation(TRACES, FIDEDh, word.getFIDED());
-					objectBasicAnnoSpan.createAnnotation(TRACES, COMMENT, word.getCOMM());
+					objectBasicAnnoSpan.createAnnotation(TRACES, Comm, word.getCOMM());
+					
+					// Add word Id as meta annotation
+					objectBasicAnnoSpan.createMetaAnnotation(TRACES_NAMESPACE, ID, word.getID());
+					
 					basicAnnoLayer.addNode(objectBasicAnnoSpan);
 					annoLayer.addNode(objectAnnoSpan);
 
@@ -354,6 +561,33 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 
 	/**
 	 * TODO: Description
+	 * @param filePath 
+	 *
+	 * @param fileToCheck
+	 */
+	private boolean checkFileExists(File fileToCheck, String filePath) {
+		if (!fileToCheck.exists()) {
+			throw new PepperModuleException("Could not find the " + fileToCheck.getName() + " file at " + filePath + "!");
+		}
+		try (BufferedReader br = new BufferedReader(new FileReader(fileToCheck))){
+			String rl = br.readLine();
+			if (rl == null) {
+				logger.error("No TEA.ann file found or file is empty!");
+				return false;
+			}
+			else if (rl.isEmpty()) {
+				logger.error("TEA.ann file is empty!");
+				return false;
+			}
+		}
+		catch (IOException e2) {
+			logger.error("Error occurred reading the file {}.", fileToCheck.getName(), e2);
+		}
+		return true;
+	}
+
+	/**
+	 * TODO: Description
 	 *
 	 * @param sidSpan
 	 * @param sid
@@ -361,39 +595,23 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	private void annotateAnnoSpanWithDEAAnnos(SSpan sidSpan, String sid) {
 		GeTaDEAAnn dea = dEAannMap.get(sid);
 		if (dea == null) {
-			logger.info("Could not find annotations for " + SID + " " + sid + " near " + jsonParser.getCurrentLocation() + "!");
+			logger.info("Could not find annotations for " + Sid + " " + sid + " near " + jsonParser.getCurrentLocation() + "!");
 		}
 		else {
-//			sidSpan.createAnnotation(TRACESSID, LE, dea.getLe());
-			// Alternative annotation format: Le: name (number) - creator - style: style [comment]
-			Map<String, String> annoMap = new HashMap<>();
-			for (GeTaATT att : dea.getAttList()) {
-				for (String[] nv : att.getNVs()) {
-					if (nv[1] != null && !nv[1].isEmpty()) {
-						try {
-							/*
-							 * Create the annotation, and replace whitespaces,
-							 * which are illegal as annotation keys, with
-							 * dashes.
-							 */
-//							sidSpan.createAnnotation(TRACESSID, nv[0].replaceAll(" ", "-"), nv[1]);
-							annoMap.put(nv[0].replaceAll(" ", "-"), nv[1]);
-						} catch (SaltInsertionException e) {
-							PepperModuleException ex = new PepperModuleException("Duplicate annotation name in " + getDocument().getName()
-									+ "!\n" + "Current annotation: " + TRACESSID + "::" + nv[0] + "=" + nv[1] + "\n"
-									+ "Existing annotation: " + sidSpan.getAnnotation(TRACESSID, nv[0]) + "\n" + "Sid: "
-									+ sid, e);
-							logger.error("Conversion error: ", ex);
-							throw ex;
-						}
-					} else {
-						logger.info("Found an empty annotation (Sid: " + sid + "): \"" + nv[0] + "\"! Ignoring it.");
-					}
-				}
-			}
-			sidSpan.createAnnotation(TRACESSID, "DEA", dea.getLe() + ": " + annoMap.get("name") + " (" + annoMap.get("number") + ") - " + 
-			annoMap.get("creator") + " - style: " + (annoMap.get("style") == null ? "-" : annoMap.get("style")) + " [" + (annoMap.get("comm") == null ? "-" : annoMap.get("comm")) + "]");
-			
+			sidSpan.createAnnotation(TRACES_NAMESPACE, Id, dea.getId());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, WB, dea.getWB());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, WE, dea.getWE());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, NRI, dea.getNRI());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, NR, dea.getNR());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, LE, dea.getLE());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, G, dea.getG());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, C, dea.getC());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, DP, dea.getDP());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, NA, dea.getNA());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, CR, dea.getCR());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, HWB, dea.getHWB());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, HWE, dea.getHWE());
+			sidSpan.createAnnotation(TRACES_NAMESPACE, DC, dea.getDC());
 		}
 	}
 
@@ -407,7 +625,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	private void annotateAnnoSpanWithTEAAnnos(SSpan annoSpan, String tid) {
 		GeTaTEAAnn tea = tEAannMap.get(tid);
 		if (tea == null) {
-			logger.info("Could not find annotations for " + TID + " " + tid + " near " + jsonParser.getCurrentLocation() + "!");
+			logger.info("Could not find annotations for " + Tid + " " + tid + " near " + jsonParser.getCurrentLocation() + "!");
 		}
 		else {
 			annoSpan.createAnnotation(TRACES, TOKL, tea.getTokl());
@@ -440,7 +658,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 							}
 						}
 						else {
-							logger.info("Found an empty annotation (Tid: " + tid + "): \"" + nv[0] + "\"! Ignoring it.");
+							logger.trace("Found an empty annotation (Tid: " + tid + "): \"" + nv[0] + "\"! Ignoring it.");
 						}
 					}
 				}

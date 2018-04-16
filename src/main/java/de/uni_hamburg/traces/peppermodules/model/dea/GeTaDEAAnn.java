@@ -18,19 +18,14 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules.model.dea;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
-import org.corpus_tools.pepper.modules.exceptions.PepperModuleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import de.uni_hamburg.traces.peppermodules.model.tea.GeTaAL;
+import de.uni_hamburg.traces.peppermodules.GeTaMapper;
 
 /**
  * An object representation of a JSON object from a GeTa *TEA.ann annotation file.
@@ -41,20 +36,21 @@ import de.uni_hamburg.traces.peppermodules.model.tea.GeTaAL;
 public class GeTaDEAAnn {
 	
 	private static final Logger logger = LoggerFactory.getLogger(GeTaDEAAnn.class);
-	
-	private static final String ID = "Id";
-	private static final String WSTART = "Wstart";
-	private static final String WSTOP = "Wstop";
-	private static final String LE = "Le";
-	private static final String ATT = "Att";
-	private static final String N = "N";
-	private static final String V = "V";
 	private String id;
-	private String wstart;
-	private String wstop;
+	private String wb;
+	private String we;
+	private String nri;
+	private String nr;
 	private String le;
-	private List<GeTaATT> attList = new ArrayList<>();
-
+	private String g;
+	private String c;
+	private String dp;
+	private String na;
+	private String cr;
+	private String hwb;
+	private String hwe;
+	private String dc;
+	
 
 	/**
 	 * This is a constructor working as a {@link JsonCreator}, i.e.,
@@ -65,137 +61,37 @@ public class GeTaDEAAnn {
 	 * @param m
 	 */
 	@JsonCreator
-	public GeTaDEAAnn(@JsonProperty(ID) String id, @JsonProperty(WSTART) String wstart, @JsonProperty(WSTOP) String wstop, @JsonProperty(LE) String le, @JsonProperty(ATT) ArrayList atts) {
+	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
+	public GeTaDEAAnn(@JsonProperty(GeTaMapper.Id) String id, 
+			@JsonProperty(GeTaMapper.WB) String wb,
+			@JsonProperty(GeTaMapper.WE) String we, 
+			@JsonProperty(GeTaMapper.NRI) String nri, 
+			@JsonProperty(GeTaMapper.NR) String nr, 
+			@JsonProperty(GeTaMapper.LE) String le, 
+			@JsonProperty(GeTaMapper.G) String g, 
+			@JsonProperty(GeTaMapper.C) String c, 
+			@JsonProperty(GeTaMapper.DP) String dp, 
+			@JsonProperty(GeTaMapper. NA) String na, 
+			@JsonProperty(GeTaMapper.CR) String cr, 
+			@JsonProperty(GeTaMapper. HWB) String hwb, 
+			@JsonProperty(GeTaMapper. HWE) String hwe, 
+			@JsonProperty(GeTaMapper.DC) String dc) {
 		this.id = id;
-		this.wstart = wstart;
-		this.wstop = wstop;
+		this.wb = wb;
+		this.we = we;
+		this.nri = nri;
+		this.nr = nr;
 		this.le = le;
-//		this.attList = atts;
-		
-		if (atts != null && atts instanceof List) {
-			List<LinkedHashMap<String, String>> attMapList = (List<LinkedHashMap<String, String>>) atts;
-			for (LinkedHashMap<String, String> attMap : attMapList) {
-				GeTaATT att = new GeTaATT();
-				for (String attKey : attMap.keySet()) {
-					if (attKey.equals(N)) {
-						att.getNVs().add(new String[] { attMap.get(attKey), attMap.get(V) });
-					}
-					else if (attKey.length() > 1 && attKey.startsWith(N)) {
-						String suffix = attKey.substring(1, attKey.length());
-						att.getNVs().add(new String[] { attMap.get(attKey), attMap.get(V + suffix) });
-					}
-					else if (!attKey.startsWith(N) && !attKey.startsWith(V)) {
-						throw new PepperModuleException("Found an unknown key in annotation: " + attKey + "!");
-					}
-				}
-				attList.add(att);
-			}
-		}
-		else {
-			throw new PepperModuleException("Model error in annotations with Id \"" + id + "\": Value of \'Att\' must be a List!");
-		}
-		
-		
-		
-		
-//		if (atts != null && atts instanceof List) {
-//			for (String[] att : atts) {
-//				
-//			}
-//			GeTaATT att = new GeTaATT();
-//			if (ltMapVal instanceof List) {
-//				@SuppressWarnings("unchecked")
-//				List<LinkedHashMap<String, String>> alList = (List<LinkedHashMap<String, String>>) ltMapVal;
-//				for (LinkedHashMap<String, String> alMap : alList) {
-//					for (String alKey : alMap.keySet()) {
-//						if (alKey.equals(N)) {
-//							att.getNVs().add(new String[] { alMap.get(alKey), alMap.get(V) });
-//						}
-//						else if (alKey.length() > 1 && alKey.startsWith(N)) {
-//							String suffix = alKey.substring(1, alKey.length());
-//							att.getNVs().add(new String[] { alMap.get(alKey), alMap.get(V + suffix) });
-//						}
-//						else if (!alKey.startsWith(N) && !alKey.startsWith(V)) {
-//							throw new PepperModuleException("Found an unknown key in annotation: " + alKey + "!");
-//						}
-//					}
-//				}
-//			}
-//			else {
-//				throw new PepperModuleException("Model error in annotations with Id \"" + id + "\": Value of \'AL\' must be a List!");
-//			}
-//			lt.getALs().add(att);
-//		}
-//		
-//		if (atts != null) {
-//			for (Entry<String, ?> entry : m.entrySet()) {
-//				Object mVal = entry.getValue();
-//				String mKey = entry.getKey();
-//				if (mKey.equals("ne")) {
-//					if (mVal instanceof String) {
-//						this.ne = (String) mVal;
-//					}
-//					else {
-//						throw new PepperModuleException("Model error in annotation with Id \"" + id + "\": Value of \'ne\' must be a list!");
-//					}
-//				}
-//				else if (mKey.equals(LT)) {
-//					GeTaLT lt = new GeTaLT();
-//					if (mVal instanceof List) {
-//						@SuppressWarnings("unchecked")
-//						List<LinkedHashMap<String, ?>> ltList = (List<LinkedHashMap<String, ?>>) mVal;
-//						for (LinkedHashMap<String, ?> innerLTMap : ltList) {
-//							for (Entry<String, ?> ltMapEntry : innerLTMap.entrySet()) {
-//								String ltMapKey = ltMapEntry.getKey();
-//								Object ltMapVal = ltMapEntry.getValue();
-//								if (ltMapKey.equals(NT)) {
-//									if (ltMapVal instanceof String) {
-//										lt.setNT((String) ltMapVal);
-//									}
-//									else {
-//										throw new PepperModuleException("Model error in word with Id \"" + id + "\": Value of \'NT\' must be a String!");
-//
-//									}
-//								}
-//								else if (ltMapKey.equals(AL)) {
-//									GeTaAL al = new GeTaAL();
-//									if (ltMapVal instanceof List) {
-//										@SuppressWarnings("unchecked")
-//										List<LinkedHashMap<String, String>> alList = (List<LinkedHashMap<String, String>>) ltMapVal;
-//										for (LinkedHashMap<String, String> alMap : alList) {
-//											for (String alKey : alMap.keySet()) {
-//												if (alKey.equals(N)) {
-//													al.getNVs().add(new String[] { alMap.get(alKey), alMap.get(V) });
-//												}
-//												else if (alKey.length() > 1 && alKey.startsWith(N)) {
-//													String suffix = alKey.substring(1, alKey.length());
-//													al.getNVs().add(new String[] { alMap.get(alKey), alMap.get(V + suffix) });
-//												}
-//												else if (!alKey.startsWith(N) && !alKey.startsWith(V)) {
-//													throw new PepperModuleException("Found an unknown key in annotation: " + alKey + "!");
-//												}
-//											}
-//										}
-//									}
-//									else {
-//										throw new PepperModuleException("Model error in annotations with Id \"" + id + "\": Value of \'AL\' must be a List!");
-//									}
-//									lt.getALs().add(al);
-//								}
-//							}
-//						}
-//					}
-//					lts.add(lt);
-//				}
-//				else {
-//					throw new PepperModuleException("Found an unknown key in annotation: " + mKey + " of type " + mVal.getClass() + "!");
-//				}
-//			}
-//		}
-//		else {
-//			logger.warn("Not found any annotations for Id " + id + " (" + tokl + ")!");
-//		}
+		this.g = g;
+		this.c = c;
+		this.dp = dp;
+		this.na = na;
+		this.cr = cr;
+		this.hwb = hwb;
+		this.hwe = hwe;
+		this.dc = dc;
 	}
+
 
 	/**
 	 * @return the id
@@ -204,88 +100,108 @@ public class GeTaDEAAnn {
 		return id;
 	}
 
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public final void setId(String id) {
-		this.id = id;
-	}
 
 	/**
-	 * @return the wstart
+	 * @return the wb
 	 */
-	public String getWstart() {
-		return wstart;
+	public final String getWB() {
+		return wb;
 	}
 
-	/**
-	 * @param wstart the wstart to set
-	 */
-	public final void setWstart(String wstart) {
-		this.wstart = wstart;
-	}
 
 	/**
-	 * @return the wstop
+	 * @return the we
 	 */
-	public String getWstop() {
-		return wstop;
+	public final String getWE() {
+		return we;
 	}
 
+
 	/**
-	 * @param wstop the wstop to set
+	 * @return the nri
 	 */
-	public final void setWstop(String wstop) {
-		this.wstop = wstop;
+	public final String getNRI() {
+		return nri;
 	}
+
+
+	/**
+	 * @return the nr
+	 */
+	public final String getNR() {
+		return nr;
+	}
+
 
 	/**
 	 * @return the le
 	 */
-	public String getLe() {
+	public final String getLE() {
 		return le;
 	}
 
+
 	/**
-	 * @param le the le to set
+	 * @return the g
 	 */
-	public final void setLe(String le) {
-		this.le = le;
-	}
-		
-	/**
-	 * @return the attList
-	 */
-	public List<GeTaATT> getAttList() {
-		return attList;
-	}
-	
-	/**
-	 * @param attList the attList to set
-	 */
-	public final void setAttList(List<GeTaATT> attList) {
-		this.attList = attList;
+	public final String getG() {
+		return g;
 	}
 
-	/*
-	 * @copydoc @see java.lang.Object#toString()
+
+	/**
+	 * @return the c
 	 */
-	@Override
-	public String toString() {
-		StringBuilder b = new StringBuilder();
-		b.append(this.getClass().getName() + "\n");
-		b.append(ID + ":" + id + "\n");
-		b.append(WSTART + ":" + wstart + "\n");
-		b.append(WSTOP + ":" + wstop + "\n");
-		b.append(LE + ":" + le + "\n");
-		for (GeTaATT att : getAttList()) {
-			b.append(att.getNVs().isEmpty() ? "" : "   name-value:\n");
-			for (String[] nv : att.getNVs()) {
-				b.append("    " + nv[0] + ":" + nv[1] + "\n");
-			}
-		}
-		return b.toString();
+	public final String getC() {
+		return c;
+	}
+
+
+	/**
+	 * @return the dp
+	 */
+	public final String getDP() {
+		return dp;
+	}
+
+
+	/**
+	 * @return the na
+	 */
+	public final String getNA() {
+		return na;
+	}
+
+
+	/**
+	 * @return the cr
+	 */
+	public final String getCR() {
+		return cr;
+	}
+
+
+	/**
+	 * @return the hwb
+	 */
+	public final String getHWB() {
+		return hwb;
+	}
+
+
+	/**
+	 * @return the hwe
+	 */
+	public final String getHWE() {
+		return hwe;
+	}
+
+
+	/**
+	 * @return the dc
+	 */
+	public final String getDC() {
+		return dc;
 	}
 
 }
