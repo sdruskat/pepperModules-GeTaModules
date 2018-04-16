@@ -18,38 +18,26 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules.model.dea;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.HashMap; 
+import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
 
 import de.uni_hamburg.traces.peppermodules.GeTaMapper;
 
 /**
- * An object representation of a JSON object from a GeTa *TEA.ann annotation file.
+ * An object representation of a JSON object from a GeTa *DEA.ann annotation file.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
  */
 public class GeTaDEAAnn {
 	
-	private static final Logger logger = LoggerFactory.getLogger(GeTaDEAAnn.class);
+	final Map<String, String> annotations = new HashMap<>();
 	private String id;
-	private String wb;
-	private String we;
-	private String nri;
-	private String nr;
-	private String le;
-	private String g;
-	private String c;
-	private String dp;
-	private String na;
-	private String cr;
-	private String hwb;
-	private String hwe;
-	private String dc;
 	
 
 	/**
@@ -77,19 +65,30 @@ public class GeTaDEAAnn {
 			@JsonProperty(GeTaMapper. HWE) String hwe, 
 			@JsonProperty(GeTaMapper.DC) String dc) {
 		this.id = id;
-		this.wb = wb;
-		this.we = we;
-		this.nri = nri;
-		this.nr = nr;
-		this.le = le;
-		this.g = g;
-		this.c = c;
-		this.dp = dp;
-		this.na = na;
-		this.cr = cr;
-		this.hwb = hwb;
-		this.hwe = hwe;
-		this.dc = dc;
+		annotations.put(GeTaMapper.Id, id);
+		annotations.put(GeTaMapper.WB, wb);
+		annotations.put(GeTaMapper.WE, we);
+		annotations.put(GeTaMapper.NRI, nri);
+		annotations.put(GeTaMapper.NR, nr);
+		annotations.put(GeTaMapper.LE, le);
+		annotations.put(GeTaMapper.G, g);
+		annotations.put(GeTaMapper.C, c);
+		annotations.put(GeTaMapper.DP, dp);
+		annotations.put(GeTaMapper.NA, na);
+		annotations.put(GeTaMapper.CR, cr);
+		annotations.put(GeTaMapper.HWB, hwb);
+		annotations.put(GeTaMapper.HWE, hwe);
+		annotations.put(GeTaMapper.DC, dc);
+		// Remove null values from map
+		Iterables.removeIf(annotations.values(), Predicates.isNull());
+	}
+
+
+	/**
+	 * @return the annotations
+	 */
+	public final Map<String, String> getAnnotations() {
+		return annotations;
 	}
 
 
@@ -98,110 +97,6 @@ public class GeTaDEAAnn {
 	 */
 	public final String getId() {
 		return id;
-	}
-
-
-	/**
-	 * @return the wb
-	 */
-	public final String getWB() {
-		return wb;
-	}
-
-
-	/**
-	 * @return the we
-	 */
-	public final String getWE() {
-		return we;
-	}
-
-
-	/**
-	 * @return the nri
-	 */
-	public final String getNRI() {
-		return nri;
-	}
-
-
-	/**
-	 * @return the nr
-	 */
-	public final String getNR() {
-		return nr;
-	}
-
-
-	/**
-	 * @return the le
-	 */
-	public final String getLE() {
-		return le;
-	}
-
-
-	/**
-	 * @return the g
-	 */
-	public final String getG() {
-		return g;
-	}
-
-
-	/**
-	 * @return the c
-	 */
-	public final String getC() {
-		return c;
-	}
-
-
-	/**
-	 * @return the dp
-	 */
-	public final String getDP() {
-		return dp;
-	}
-
-
-	/**
-	 * @return the na
-	 */
-	public final String getNA() {
-		return na;
-	}
-
-
-	/**
-	 * @return the cr
-	 */
-	public final String getCR() {
-		return cr;
-	}
-
-
-	/**
-	 * @return the hwb
-	 */
-	public final String getHWB() {
-		return hwb;
-	}
-
-
-	/**
-	 * @return the hwe
-	 */
-	public final String getHWE() {
-		return hwe;
-	}
-
-
-	/**
-	 * @return the dc
-	 */
-	public final String getDC() {
-		return dc;
 	}
 
 }
