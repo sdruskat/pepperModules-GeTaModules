@@ -66,6 +66,7 @@ import de.uni_hamburg.traces.peppermodules.model.ea.GeTaFC;
 import de.uni_hamburg.traces.peppermodules.model.nea.GeTaNEA;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaAL;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaLT;
+import de.uni_hamburg.traces.peppermodules.model.tea.GeTaM;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaTEA;
 import de.uni_hamburg.traces.peppermodules.properties.GeTaImporterProperties;
 
@@ -319,7 +320,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	private boolean mapQEA = true;
 	private boolean mapMetaEA = true;
 
-	private static final String TRACES_NAMESPACE = "GeTa"; 
+	private static final String GETA_NAMESPACE = "GeTa"; 
+	private static final String GETA_META_NAMESPACE = GETA_NAMESPACE + "_META";
 
 	/*
 	 * @copydoc @see org.corpus_tools.pepper.impl.PepperMapperImpl#mapSCorpus()
@@ -449,6 +451,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			for (GeTaFidalword w : ea.getFidalwords()) {
 				fidalwordMap.put(w.getId(), w);
 			}
+			// FIXME: teaMAP not needed in this direction of mapping?
 			if (mapTEA) {
 				for (GeTaTEA t : tea) {
 					teaMap.put(t.getId(), t);
@@ -478,26 +481,36 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			 */
 			// Map document metadata 
 			/* 
-			 * FIXME: Catch duplicate SCR/TR when there's a metadata file
-			 * instead of this if/else
+			 * Avoid dupllication of keys and resulting SaltExceptions by
+			 * suffixing namespace for metadata annotations with "_META".
 			 */
-			if (mapMetaToAnnos) {
-				getDocument().createMetaAnnotation(TRACES_NAMESPACE, SCR, ea.getSCR());
-				getDocument().createMetaAnnotation(TRACES_NAMESPACE, TR, ea.getTR());
-				for (Entry<String, Object> meta : metaea.getAnnotations().entrySet()) {
-					getDocument().createAnnotation(TRACES_NAMESPACE + "_META", meta.getKey(), meta.getValue());
-				}
+			getDocument().createMetaAnnotation(GETA_NAMESPACE, SCR, ea.getSCR());
+			getDocument().createMetaAnnotation(GETA_NAMESPACE, TR, ea.getTR());
+			for (Entry<String, Object> meta : metaea.getAnnotations().entrySet()) {
+				getDocument().createMetaAnnotation(GETA_NAMESPACE + "_META", meta.getKey(), meta.getValue());
 			}
-			else {
-				for (Entry<String, Object> meta : metaea.getAnnotations().entrySet()) {
-					getDocument().createMetaAnnotation(TRACES_NAMESPACE, meta.getKey(), meta.getValue());
+			List<String> parts = metaea.getParts();
+			if (parts != null) {
+				StringBuilder sbParts = new StringBuilder();
+				for (String p : metaea.getParts()) {
+					sbParts.append(p).append(", ");
 				}
+				String strParts = sbParts.toString().trim();
+				getDocument().createMetaAnnotation(GETA_META_NAMESPACE, PARTS,
+						strParts.substring(0, strParts.length() - 1));
 			}
 			
 //			SSpan objectBasicAnnoSpan = null, tRSpan = null, fIDEDSpan = null;
 //			Map<String, List<SToken>> tid2TokMap = new HashMap<>();
 //			// GeTaWord = entity in FIDALWORDS array
 //			Map<String, List<GeTaFidalword>> sid2WordsMap = new HashMap<>();
+			
+			// A map mapping GeTa Token Ids to lists of STokens
+			Map<String, ArrayList<SToken>> tidTokensMap = new HashMap<>();
+			// A map mapping GeTa Division Ids to lists of STokens
+			Map<String, ArrayList<SToken>> sidTokensMap = new HashMap<>();
+			// A map mapping GeTa Division Ids to lists of STokens
+			Map<String, ArrayList<SToken>> neTokensMap = new HashMap<>();
 
 			// Iterate through all GeTaWords and map accordingly
 			for (GeTaFidalword fidalword : ea.getFidalwords()) {
@@ -512,89 +525,124 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 						SToken tok = graph.createToken(text, text.getText().length() - ll.getLat().length(), text.getText().length());
 						fcTokens.add(tok);
 						fidalwordTokens.add(tok);
+						// Add the token to the map from Tids to STokens
+						ArrayList<SToken> llTidTokenList = null;
+						String tid = ll.getTid();
+						if ((llTidTokenList = tidTokensMap.get(tid)) != null) {
+							llTidTokenList.add(tok);
+						}
+						else {
+							tidTokensMap.put(ll.getTid(), new ArrayList<>(Arrays.asList(new SToken[] {tok})));
+						}
+						// Add the token to the map from Sids to STokens
+						ArrayList<SToken> llSidTokenList = null;
+						List<String> sids = fidalword.getSid();
+						for (String sid : sids) {
+							if ((llSidTokenList = sidTokensMap.get(sid)) != null) {
+								llSidTokenList.add(tok);
+							}
+							else {
+								sidTokensMap.put(sid, new ArrayList<>(Arrays.asList(new SToken[] {tok})));
+							}
+						}
+						// Add the token to the map from NE Ids to STokens
+						String neId = fidalword.getNe();
+						if (neId != null && !neId.isEmpty()) {
+							List<SToken> neTokens = neTokensMap.get(neId);
+							if (neTokens == null) {
+								neTokensMap.put(neId, new ArrayList<>(Arrays.asList(new SToken[]{tok})));
+							}
+							else {
+								neTokens.add(tok);
+							}
+						}
 					}
-					// Add FC-based annotations to FC
+					// Add FC-level annotations to FC
 					SSpan singleFcSpan = graph.createSpan(fcTokens);
 					fcSpans.add(singleFcSpan);
-					for (Entry<String, Object> fcAnno : fc.getAnnotations().entrySet()) {
-						String key = fcAnno.getKey();
-						if (key != null && !key.isEmpty())
-						singleFcSpan.createAnnotation(TRACES_NAMESPACE, key, fcAnno.getValue());
-					}
-					// Add Ed-based annotations to FC
+					annotateSpan(fc.getAnnotations(), singleFcSpan);
+					// Add Ed-level annotations to FC
 					GeTaEd ed = fc.getEd();
 					if (ed != null) {
 						List<GeTaLT> lts = ed.getLt();
 						if (lts != null) {
+							/* 
+							 * Add LT-level annotations to the current FC span
+							 */
 							for (GeTaLT lt : lts) {
-								String name = lt.getNt();
-								String value = null;
+								String nt = lt.getNt();
 								List<GeTaAL> als = lt.getAl();
-								if (als != null) {
-									StringBuilder sb = new StringBuilder();
-									for (GeTaAL al : als) {
-										for (Entry<String, String> a : al.getAnnotations().entrySet()) {
-											sb.append(a.getKey()).append(":").append(a.getValue()).append(",");
-										}
+								if (als != null || nt != null) {
+									SSpan ltSpan = graph.createSpan(fcTokens);
+									if (nt != null && !nt.isEmpty()) {
+										ltSpan.createAnnotation(GETA_NAMESPACE, NT, lt.getNt());
 									}
-									String str = sb.toString().trim();
-									value = str.substring(0, str.length() - 1);
+									if (als != null) {
+										annotateSpanWithALs(als, ltSpan);
+									}
 								}
-								singleFcSpan.createAnnotation(TRACES_NAMESPACE, name, value);
 							}
 						}
 					}
 				}
+				// Add Fidalword-level annotations to Fidalword
 				SSpan fidalwordSpan = graph.createSpan(fidalwordTokens);
-				for (Entry<String, String> a : fidalword.getAnnotations().entrySet()) {
-					fidalwordSpan.createAnnotation(TRACES_NAMESPACE, a.getKey(), a.getValue());
-				}
+				annotateSpan(fidalword.getAnnotations(), fidalwordSpan);
 				// Fix HTML in FIDED
 				String fided = fidalword.getFided();
-				fidalwordSpan.createAnnotation(TRACES_NAMESPACE, FIDEDh, fided);
-				fidalwordSpan.getAnnotation(TRACES_NAMESPACE, FIDED).setValue(Jsoup.parse(fided).text());
-//				if (!annoSpans.isEmpty()) {
-//					List<SToken> annoSpanTokens = new ArrayList<>();
-//					for (SSpan span : annoSpans) {
-//						annoSpanTokens.addAll(graph.getOverlappedTokens(span));
-//					}
-//					tRSpan = graph.createSpan(annoSpanTokens);
-//					tRSpan.createAnnotation(TRACES, TR, word.getTr());
-//					tRLayer.addNode(tRSpan);
-//					fIDEDSpan = graph.createSpan(annoSpanTokens);
-//					fIDEDSpan.createAnnotation(TRACES, FIDED, Jsoup.parse(word.getFided()).text());
-//					fIDEDLayer.addNode(fIDEDSpan);
-//					objectBasicAnnoSpan = graph.createSpan(annoSpanTokens);
-//					for (Entry<String, String> a : word.getAnnotations().entrySet()) {
-//						objectBasicAnnoSpan.createAnnotation(TRACES, a.getKey(), a.getValue());
-//					}
-//					objectBasicAnnoSpan.createAnnotation(TRACES, FIDEDh, word.getFided());
-//					
-//					// Add word Id as meta annotation
-//					objectBasicAnnoSpan.createMetaAnnotation(TRACES_NAMESPACE, ID, word.getId());
-//					
-//					annoLayer.addNode(objectBasicAnnoSpan);
-//
-//				}
-//				annoSpans.clear();
+				fidalwordSpan.createAnnotation(GETA_NAMESPACE, FIDEDh, fided);
+				fidalwordSpan.getAnnotation(GETA_NAMESPACE, FIDED).setValue(Jsoup.parse(fided).text());
 				text.setText(text.getText().concat(" "));
 			}
-//			/*
-//			 * Connect the Fidal words with their linguistic annotations. The
-//			 * connection is made via the Tids.
-//			 */
-//			for (Entry<String, List<SToken>> tracesToken : tid2TokMap.entrySet()) {
+			
+			/*
+			 * Connect the Fidal words with their linguistic annotations. The
+			 * connection is made via the Tids.
+			 */
+			for (GeTaTEA t : tea) {
+				ArrayList<SToken> teaTokens = tidTokensMap.get(t.getId());
+				if (teaTokens != null) {
+					SSpan teaSpan = graph.createSpan(teaTokens);
+					// Map TEA-level annotations to TEA span
+					annotateSpan(t.getAnnotations(), teaSpan);
+					GeTaM m = t.getM();
+					if (m != null) {
+						Boolean mNe = m.getNe();
+						if (mNe != null) {
+							teaSpan.createAnnotation(GETA_NAMESPACE, ne, mNe);
+						}
+						List<GeTaLT> lts = m.getLt();
+						if (lts != null) {
+							for (GeTaLT lt : lts) {
+								teaSpan.createAnnotation(GETA_NAMESPACE, NT, lt.getNt());
+								List<GeTaAL> als = lt.getAl();
+								annotateSpanWithALs(als, teaSpan);
+							}
+						}
+					}
+				}
+				
+			}
+			// OLD BELOW
+//			for (Entry<String, List<SToken>> tracesToken : tidTokensMap.entrySet()) {
 //				SSpan tracesTokenSpan = graph.createSpan(tracesToken.getValue());
 //				annoLayer.addNode(tracesTokenSpan);
 //				if (mapTEA) {
 //					annotateAnnoSpanWithTEAAnnos(tracesTokenSpan, tracesToken.getKey());
 //				}
 //			}
-//			/*
-//			 * Connect the Fidel words with their section annotations. The
-//			 * connection is made via the Sids.
-//			 */
-//			// FIXME: 
+			
+			/*
+			 * Connect the Fidel words with their division annotations. The
+			 * connection is made via the Sids.
+			 */
+			for (GeTaDEA d : dea) {
+				SSpan deaSpan = graph.createSpan(sidTokensMap.get(d.getId()));
+				annotateSpan(d.getAnnotations(), deaSpan);
+			}
+			
+			
+//			// OLD BELOW
 //			for (Entry<String, List<GeTaFidalword>> sidAndTracesWord : sid2WordsMap.entrySet()) {
 //				Set<SToken> sidTokens = new HashSet<>();
 //				// Compile list of tokens governed by words in this sid
@@ -611,10 +659,58 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 //					annotateAnnoSpanWithDEAAnnos(sidSpan, sidAndTracesWord.getKey());
 //				}
 //			}
+			
+			/*
+			 * Connect Fidal words with named entities
+			 */
+			
+			
 		} catch (IOException e) {
 			throw new PepperModuleException("Error parsing the JSON file " + eaFile.getName() + "!", e);
 		}
 		return (DOCUMENT_STATUS.COMPLETED);
+	}
+
+	/**
+	 * TODO: Description
+	 *
+	 * @param als
+	 * @param teaSpan
+	 */
+	private void annotateSpanWithALs(List<GeTaAL> als, SSpan teaSpan) {
+		if (als != null) {
+			for (GeTaAL al : als) {
+				annotateSpan(al.getAnnotations(), teaSpan);
+			}
+		}
+	}
+
+	/**
+	 * TODO: Description
+	 *
+	 * @param entrySet
+	 * @param span
+	 */
+	private void annotateSpan(Map<String, ?> annotationMap, SSpan span) {
+		for (Entry<String, ?> a : annotationMap.entrySet()) {
+			String key = a.getKey();
+			if (key == null || key.isEmpty()) {
+				continue;
+			}
+			Object value = a.getValue();
+			if (a.getValue() == null) {
+				continue;
+			}
+			else {
+				if (a.getValue() instanceof String) {
+					String aStr = (String) a.getValue();
+					if (aStr.isEmpty()) {
+						continue;
+					}
+				}
+			}
+			span.createAnnotation(GETA_NAMESPACE, key, value);
+		}
 	}
 
 	/**
@@ -657,67 +753,65 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 		}
 		else {
 			for (Entry<String, String> entry : dea.getAnnotations().entrySet()) {
-				sidSpan.createAnnotation(TRACES_NAMESPACE, entry.getKey(), entry.getValue());
+				sidSpan.createAnnotation(GETA_NAMESPACE, entry.getKey(), entry.getValue());
 			}
 		}
 	}
 
-	/**
-	 * Maps the annotations from the GeTa .ann annotations file to the
-	 * {@link SSpan}s that are to be annotated.
-	 *
-	 * @param annoSpan
-	 * @param tid
-	 */
-	private void annotateAnnoSpanWithTEAAnnos(SSpan annoSpan, String tid) {
-		GeTaTEA tea = teaMap.get(tid);
-		if (tea == null) {
-			logger.info("Could not find annotations for " + Tid + " " + tid + " near " + jsonParser.getCurrentLocation() + "!");
-		}
-		else {
-			for (Entry<String, String> a : tea.getAnnotations().entrySet()) {
-				annoSpan.createAnnotation(TRACES_NAMESPACE, a.getKey(), a.getValue());
-			}
-			if (tea.getM() != null) {
-			for (GeTaLT lt : tea.getM().getLt()) {
-				annoSpan.createAnnotation(TRACES_NAMESPACE, NT, lt.getNt());
-				if (lt.getAl() != null) {
-				for (GeTaAL al : lt.getAl()) {
-					for (Entry<String, String> a : al.getAnnotations().entrySet()) {
-						if (a.getKey() != null && !a.getKey().isEmpty()) {
-							annoSpan.createAnnotation(TRACES_NAMESPACE, a.getKey(), a.getValue());
-						}
-//						if (nv[1] != null && !nv[1].isEmpty()) {
-//							try {
-//								/* 
-//								 * Special case: split up "lex" annotations which contain
-//								 * Tid and actual value separated by a double dash "--".
-//								 */
-//								if (nv[0].equals("lex")) {
-//									annoSpan.createAnnotation(TRACES_NAMESPACE, "lem", nv[1].split("--")[1]);
-//								}
-//								else {
-//									/*
-//									 *  Create the annotation, and replace whitespaces, which
-//									 *  are illegal as annotation keys, with dashes.
-//									 */
-//									annoSpan.createAnnotation(TRACES, nv[0].replaceAll(" ", "-"), nv[1]);
-//								}
-//							}
-//							catch (SaltInsertionException e) {
-//								PepperModuleException ex = new PepperModuleException("Duplicate annotation name in " + getDocument().getName() + "!\n" + "Current annotation: " + TRACES + "::" + nv[0] + "=" + nv[1] + "\n" + "Existing annotation: " + annoSpan.getAnnotation(TRACES, nv[0]) + "\n" + "Token ID: " + tid, e);
-//								logger.error("Conversion error: ", ex);
-//								throw ex;
-//							}
+//	/**
+//	 * Maps the annotations from the GeTa .ann annotations file to the
+//	 * {@link SSpan}s that are to be annotated.
+//	 *
+//	 * @param annoSpan
+//	 * @param tid
+//	 */
+//	private void annotateAnnoSpanWithTEAAnnos(SSpan annoSpan, String tid) {
+//		GeTaTEA tea = teaMap.get(tid);
+//		if (tea == null) {
+//			logger.info("Could not find annotations for " + Tid + " " + tid + " near " + jsonParser.getCurrentLocation() + "!");
+//		}
+//		else {
+//			annotateSpan(tea.getAnnotations(), annoSpan);
+//			if (tea.getM() != null) {
+//			for (GeTaLT lt : tea.getM().getLt()) {
+//				annoSpan.createAnnotation(GETA_NAMESPACE, NT, lt.getNt());
+//				if (lt.getAl() != null) {
+//				for (GeTaAL al : lt.getAl()) {
+//					for (Entry<String, String> a : al.getAnnotations().entrySet()) {
+//						if (a.getKey() != null && !a.getKey().isEmpty()) {
+//							annoSpan.createAnnotation(GETA_NAMESPACE, a.getKey(), a.getValue());
 //						}
-//						else {
-//							logger.trace("Found an empty annotation (Tid: " + tid + "): \"" + nv[0] + "\"! Ignoring it.");
-//						}
-					}
-				}}
-			}}
-		}
-	}
+////						if (nv[1] != null && !nv[1].isEmpty()) {
+////							try {
+////								/* 
+////								 * Special case: split up "lex" annotations which contain
+////								 * Tid and actual value separated by a double dash "--".
+////								 */
+////								if (nv[0].equals("lex")) {
+////									annoSpan.createAnnotation(GETA_NAMESPACE, "lem", nv[1].split("--")[1]);
+////								}
+////								else {
+////									/*
+////									 *  Create the annotation, and replace whitespaces, which
+////									 *  are illegal as annotation keys, with dashes.
+////									 */
+////									annoSpan.createAnnotation(TRACES, nv[0].replaceAll(" ", "-"), nv[1]);
+////								}
+////							}
+////							catch (SaltInsertionException e) {
+////								PepperModuleException ex = new PepperModuleException("Duplicate annotation name in " + getDocument().getName() + "!\n" + "Current annotation: " + TRACES + "::" + nv[0] + "=" + nv[1] + "\n" + "Existing annotation: " + annoSpan.getAnnotation(TRACES, nv[0]) + "\n" + "Token ID: " + tid, e);
+////								logger.error("Conversion error: ", ex);
+////								throw ex;
+////							}
+////						}
+////						else {
+////							logger.trace("Found an empty annotation (Tid: " + tid + "): \"" + nv[0] + "\"! Ignoring it.");
+////						}
+//					}
+//				}}
+//			}}
+//		}
+//	}
 
 	/**
 	 * Creates an {@link SLayer} with the given name

@@ -55,7 +55,7 @@ public class GeTaTEA {
 		annotations.put(GeTaMapper.TOKL, tokl);
 		annotations.put(GeTaMapper.NEId, neid);
 		// Remove null values from map
-		Iterables.removeIf(annotations.values(), Predicates.isNull());
+		Iterables.removeIf(annotations.keySet(), Predicates.isNull());
 	}
 
 

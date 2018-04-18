@@ -82,7 +82,7 @@ public class GeTaDEA {
 		annotations.put(GeTaMapper.HWB, hwb);
 		annotations.put(GeTaMapper.HWE, hwe);
 		// Remove null values from map
-		Iterables.removeIf(annotations.values(), Predicates.isNull());
+		Iterables.removeIf(annotations.keySet(), Predicates.isNull());
 	}
 
 

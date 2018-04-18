@@ -57,7 +57,7 @@ public class GeTaNEA {
 		annotations.put(GeTaMapper.T, t);
 		annotations.put(GeTaMapper.R, r);
 		// Remove null values from map
-		Iterables.removeIf(annotations.values(), Predicates.isNull());
+		Iterables.removeIf(annotations.keySet(), Predicates.isNull());
 	}
 
 	/**

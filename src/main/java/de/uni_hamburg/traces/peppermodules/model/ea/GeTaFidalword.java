@@ -72,13 +72,13 @@ public class GeTaFidalword {
 		this.tid = tid;
 		this.fc = fc;
 		this.fided = fided;
+		this.ne = ne;
 		annotations.put(GeTaMapper.FID, fid);
 		annotations.put(GeTaMapper.FIDED, fided);
 		annotations.put(GeTaMapper.TR, tr);
-		annotations.put(GeTaMapper.NE, ne);
 		annotations.put(GeTaMapper.Comm, comm);
 		// Remove null values from map
-		Iterables.removeIf(annotations.values(), Predicates.isNull());
+		Iterables.removeIf(annotations.keySet(), Predicates.isNull());
 	}
 
 	/**

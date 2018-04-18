@@ -50,7 +50,7 @@ public class GeTaAL {
 		annotations.put(n3, v3);
 		annotations.put(n, v);
 		// Remove null values from map
-		Iterables.removeIf(annotations.values(), Predicates.isNull());
+		Iterables.removeIf(annotations.keySet(), Predicates.isNull());
 	}
 
 	/**

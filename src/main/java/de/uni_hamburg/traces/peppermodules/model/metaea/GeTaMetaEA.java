@@ -67,7 +67,7 @@ public class GeTaMetaEA {
 		annotations.put(GeTaMapper.SCR, scr);
 		annotations.put(GeTaMapper.Comm, comm);
 		// Remove null values from map
-		Iterables.removeIf(annotations.values(), Predicates.isNull());
+		Iterables.removeIf(annotations.keySet(), Predicates.isNull());
 	}
 
 	/**
