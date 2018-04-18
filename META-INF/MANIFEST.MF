@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1515759340431
-Build-Jdk: 1.8.0_151
+Bnd-LastModified: 1524041361325
+Build-Jdk: 1.8.0_162
 Built-By: stephan
 Bundle-ClassPath: .,jackson-core-2.8.3.jar,jackson-databind-2.8.3.jar,ja
  ckson-annotations-2.8.3.jar,jsoup-1.9.2.jar
@@ -148,17 +148,18 @@ Export-Package: com.fasterxml.jackson.annotation;version="2.8.3",com.fas
  soup;version="0.9.0"
 Import-Package: com.fasterxml.jackson.annotation;version="[2.8,3)",com.f
  asterxml.jackson.core;version="[2.8,3)",com.fasterxml.jackson.core.type
- ;version="[2.8,3)",com.fasterxml.jackson.databind;version="[2.8,3)",jav
- ax.net.ssl,javax.xml.datatype,javax.xml.namespace,javax.xml.parsers,jav
- ax.xml.transform,javax.xml.transform.dom,javax.xml.transform.stream,org
- .corpus_tools.pepper.common;version="[3.1,4)",org.corpus_tools.pepper.i
- mpl;version="[3.1,4)",org.corpus_tools.pepper.modules;version="[3.1,4)"
- ,org.corpus_tools.pepper.modules.exceptions;version="[3.1,4)",org.corpu
- s_tools.salt;version="[3.3,4)",org.corpus_tools.salt.common;version="[3
- .3,4)",org.corpus_tools.salt.core;version="[3.3,4)",org.corpus_tools.sa
- lt.exceptions;version="[3.3,4)",org.corpus_tools.salt.graph;version="[3
- .3,4)",org.eclipse.emf.common.util,org.slf4j;version="[1.7,2)",org.w3c.
- dom,org.w3c.dom.bootstrap,org.w3c.dom.ls,org.xml.sax
+ ;version="[2.8,3)",com.fasterxml.jackson.databind;version="[2.8,3)",com
+ .google.common.base;version="[19.0,20)",com.google.common.collect;versi
+ on="[19.0,20)",javax.net.ssl,javax.xml.datatype,javax.xml.namespace,jav
+ ax.xml.parsers,javax.xml.transform,javax.xml.transform.dom,javax.xml.tr
+ ansform.stream,org.corpus_tools.pepper.common;version="[3.1,4)",org.cor
+ pus_tools.pepper.impl;version="[3.1,4)",org.corpus_tools.pepper.modules
+ ;version="[3.1,4)",org.corpus_tools.pepper.modules.exceptions;version="
+ [3.1,4)",org.corpus_tools.salt;version="[3.3,4)",org.corpus_tools.salt.
+ common;version="[3.3,4)",org.corpus_tools.salt.core;version="[3.3,4)",o
+ rg.corpus_tools.salt.graph;version="[3.3,4)",org.eclipse.emf.common.uti
+ l,org.slf4j;version="[1.7,2)",org.w3c.dom,org.w3c.dom.bootstrap,org.w3c
+ .dom.ls,org.xml.sax
 META-INF: /home/stephan/src/traces-importer/github/pepperModules-GeTaMod
  ules/META-INF
 OSGI-INF: OSGI-INF

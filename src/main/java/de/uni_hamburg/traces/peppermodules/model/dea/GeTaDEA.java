@@ -18,7 +18,8 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules.model.dea;
 
-import java.util.HashMap; 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -34,15 +35,16 @@ import de.uni_hamburg.traces.peppermodules.GeTaMapper;
  * @author Stephan Druskat <mail@sdruskat.net>
  *
  */
-public class GeTaDEAAnn {
+public class GeTaDEA {
 	
 	final Map<String, String> annotations = new HashMap<>();
 	private String id;
+	private List<String> dc;
 	
 
 	/**
 	 * This is a constructor working as a {@link JsonCreator}, i.e.,
-	 * the mapping of {@link GeTaTEAAnn} objects starts here.
+	 * the mapping of {@link GeTaTEA} objects starts here.
 	 * 
 	 * @param id
 	 * @param tokl
@@ -50,7 +52,7 @@ public class GeTaDEAAnn {
 	 */
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
-	public GeTaDEAAnn(@JsonProperty(GeTaMapper.Id) String id, 
+	public GeTaDEA(@JsonProperty(GeTaMapper.Id) String id, 
 			@JsonProperty(GeTaMapper.WB) String wb,
 			@JsonProperty(GeTaMapper.WE) String we, 
 			@JsonProperty(GeTaMapper.NRI) String nri, 
@@ -63,8 +65,9 @@ public class GeTaDEAAnn {
 			@JsonProperty(GeTaMapper.CR) String cr, 
 			@JsonProperty(GeTaMapper. HWB) String hwb, 
 			@JsonProperty(GeTaMapper. HWE) String hwe, 
-			@JsonProperty(GeTaMapper.DC) String dc) {
+			@JsonProperty(GeTaMapper.DC) List<String> dc) {
 		this.id = id;
+		this.dc = dc;
 		annotations.put(GeTaMapper.Id, id);
 		annotations.put(GeTaMapper.WB, wb);
 		annotations.put(GeTaMapper.WE, we);
@@ -78,7 +81,6 @@ public class GeTaDEAAnn {
 		annotations.put(GeTaMapper.CR, cr);
 		annotations.put(GeTaMapper.HWB, hwb);
 		annotations.put(GeTaMapper.HWE, hwe);
-		annotations.put(GeTaMapper.DC, dc);
 		// Remove null values from map
 		Iterables.removeIf(annotations.values(), Predicates.isNull());
 	}
@@ -97,6 +99,14 @@ public class GeTaDEAAnn {
 	 */
 	public final String getId() {
 		return id;
+	}
+
+
+	/**
+	 * @return the dc
+	 */
+	public final List<String> getDc() {
+		return dc;
 	}
 
 }

@@ -18,6 +18,12 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules.model.ea;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.uni_hamburg.traces.peppermodules.GeTaMapper;
+
 /**
  * A bean representing an **LL** section in GeTa data.
  *
@@ -26,76 +32,28 @@ package de.uni_hamburg.traces.peppermodules.model.ea;
  */
 public class GeTaLL {
 	
-	private String t, nr, l, tid, lat;
+	private String lat;
+	private String tid;
 
-	/**
-	 * @return the t
-	 */
-	public final String getT() {
-		return t;
-	}
-
-	/**
-	 * @param t the t to set
-	 */
-	public final void setT(String t) {
-		this.t = t;
-	}
-
-	/**
-	 * @return the nr
-	 */
-	public final String getNR() {
-		return nr;
-	}
-
-	/**
-	 * @param nr the nr to set
-	 */
-	public final void setNR(String nr) {
-		this.nr = nr;
-	}
-
-	/**
-	 * @return the l
-	 */
-	public final String getL() {
-		return l;
-	}
-
-	/**
-	 * @param l the l to set
-	 */
-	public final void setL(String l) {
-		this.l = l;
-	}
-
-	/**
-	 * @return the tid
-	 */
-	public final String getTID() {
-		return tid;
-	}
-
-	/**
-	 * @param tid the tid to set
-	 */
-	public final void setTID(String tid) {
-		this.tid = tid;
+	@JsonCreator
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public GeTaLL(@JsonProperty(GeTaMapper.LAT) String lat,
+			@JsonProperty(GeTaMapper.Tid) String tid) {
+				this.lat = lat;
+				this.tid = tid;
 	}
 
 	/**
 	 * @return the lat
 	 */
-	public final String getLAT() {
+	public final String getLat() {
 		return lat;
 	}
 
 	/**
-	 * @param lat the lat to set
+	 * @return the tid
 	 */
-	public final void setLAT(String lat) {
-		this.lat = lat;
+	public final String getTid() {
+		return tid;
 	}
-
 }

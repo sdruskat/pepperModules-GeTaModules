@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Universität Hamburg
+ * Copyright 2018 Universität Hamburg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,14 @@
  * Contributors:
  *     Stephan Druskat - initial API and implementation
  *******************************************************************************/
-package de.uni_hamburg.traces.peppermodules.model.dea;
-
-import java.util.ArrayList;
-import java.util.List;
+package de.uni_hamburg.traces.peppermodules.model.nea;
 
 /**
- * A bean representing an **Att** section in GeTa *DEA.ann files.
+ * TODO Description
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
  */
-public class GeTaATT {
-	
-	private List<String[]> nvs = new ArrayList<>();
-
-	/**
-	 * Returns a list of key-value pairs for annotations.
-	 * 
-	 * @return the nvs
-	 */
-	public final List<String[]> getNVs() {
-		return nvs;
-	}
+public class GeTaRefWord {
 
 }

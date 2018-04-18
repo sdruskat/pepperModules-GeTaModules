@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 Universität Hamburg
+ * Copyright 2018 Universität Hamburg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,102 +18,36 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules.model.ea;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.uni_hamburg.traces.peppermodules.GeTaMapper;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaLT;
 
 /**
- * A bean representing an **Ed** section in GeTa data.
+ * TODO Description
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
  */
 public class GeTaEd {
 	
-	private String p, aut, c, g, ne;
-	private List<GeTaLT> lts = new ArrayList<>();
+	private List<GeTaLT> lt;
 
-	/**
-	 * @return the p
-	 */
-	public final String getP() {
-		return p;
+	@JsonCreator
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public GeTaEd(@JsonProperty(GeTaMapper.LT) List<GeTaLT> lt) {
+		this.lt = lt;
 	}
 
 	/**
-	 * @param p
-	 *            the p to set
+	 * @return the lt
 	 */
-	public final void setP(String p) {
-		this.p = p;
-	}
-
-	/**
-	 * @return the aut
-	 */
-	public final String getAUT() {
-		return aut;
-	}
-
-	/**
-	 * @param aut
-	 *            the aut to set
-	 */
-	public final void setAUT(String aut) {
-		this.aut = aut;
-	}
-
-	/**
-	 * @return the c
-	 */
-	public final String getC() {
-		return c;
-	}
-
-	/**
-	 * @param c
-	 *            the c to set
-	 */
-	public final void setC(String c) {
-		this.c = c;
-	}
-
-	/**
-	 * @return the g
-	 */
-	public final String getG() {
-		return g;
-	}
-
-	/**
-	 * @param g
-	 *            the g to set
-	 */
-	public final void setG(String g) {
-		this.g = g;
-	}
-
-	/**
-	 * @return the ne
-	 */
-	public final String getNE() {
-		return ne;
-	}
-
-	/**
-	 * @param ne
-	 *            the ne to set
-	 */
-	public final void setNE(String ne) {
-		this.ne = ne;
-	}
-
-	/**
-	 * @return the lts
-	 */
-	public final List<GeTaLT> getLTs() {
-		return lts;
+	public final List<GeTaLT> getLt() {
+		return lt;
 	}
 
 }

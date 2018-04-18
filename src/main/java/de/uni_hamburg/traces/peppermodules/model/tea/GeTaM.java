@@ -18,8 +18,13 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules.model.tea;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.uni_hamburg.traces.peppermodules.GeTaMapper;
 
 /**
  * A bean representing an **M** section in GeTa data.
@@ -29,25 +34,29 @@ import java.util.List;
  */
 public class GeTaM {
 	
-	private String ne;
-	private List<GeTaLT> lts = new ArrayList<>();
+	private Boolean ne;
+	private List<GeTaLT> lt;
+
+	@JsonCreator
+	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
+	public GeTaM(@JsonProperty(GeTaMapper.ne) Boolean ne,
+			@JsonProperty(GeTaMapper.LT) List<GeTaLT> lt) {
+		this.ne = ne;
+		this.lt = lt;
+	}
+
 	/**
 	 * @return the ne
 	 */
-	public final String getNe() {
+	public final Boolean getNe() {
 		return ne;
 	}
+
 	/**
-	 * @param ne the ne to set
+	 * @return the lt
 	 */
-	public final void setNe(String ne) {
-		this.ne = ne;
-	}
-	/**
-	 * @return the lts
-	 */
-	public final List<GeTaLT> getLTs() {
-		return lts;
+	public final List<GeTaLT> getLt() {
+		return lt;
 	}
 
 }

@@ -20,7 +20,6 @@ package de.uni_hamburg.traces.peppermodules.model.tea;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,27 +29,41 @@ import com.google.common.collect.Iterables;
 import de.uni_hamburg.traces.peppermodules.GeTaMapper;
 
 /**
- * A bean representing an **AL** section in GeTa data.
+ * An object representation of a JSON object from a GeTa *TEA.ann annotation file.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
  */
-public class GeTaAL {
-
+public class GeTaTEA {
+	
+	
+	private String id;
 	private final Map<String, String> annotations = new HashMap<>();
+	private GeTaM m;
 
+	/**
+	 * 
+	 */
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
-	public GeTaAL(@JsonProperty(GeTaMapper.N1) String n1, @JsonProperty(GeTaMapper.V1) String v1,
-			@JsonProperty(GeTaMapper.N2) String n2, @JsonProperty(GeTaMapper.V2) String v2,
-			@JsonProperty(GeTaMapper.N3) String n3, @JsonProperty(GeTaMapper.V3) String v3,
-			@JsonProperty(GeTaMapper.N) String n, @JsonProperty(GeTaMapper.V) String v) {
-		annotations.put(n1, v1);
-		annotations.put(n2, v2);
-		annotations.put(n3, v3);
-		annotations.put(n, v);
+	public GeTaTEA(@JsonProperty(GeTaMapper.Id) String id,
+			@JsonProperty(GeTaMapper.TOKL) String tokl,
+			@JsonProperty(GeTaMapper.NEId) String neid,
+			@JsonProperty(GeTaMapper.M) GeTaM m) {
+		this.id = id;
+		this.m = m;
+		annotations.put(GeTaMapper.TOKL, tokl);
+		annotations.put(GeTaMapper.NEId, neid);
 		// Remove null values from map
 		Iterables.removeIf(annotations.values(), Predicates.isNull());
+	}
+
+
+	/**
+	 * @return the id
+	 */
+	public final String getId() {
+		return id;
 	}
 
 	/**
@@ -60,4 +73,12 @@ public class GeTaAL {
 		return annotations;
 	}
 
+	/**
+	 * @return the m
+	 */
+	public final GeTaM getM() {
+		return m;
+	}
+
+			
 }

@@ -18,8 +18,21 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules.model.ea;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
+
+import de.uni_hamburg.traces.peppermodules.GeTaMapper;
+import de.uni_hamburg.traces.peppermodules.model.tea.GeTaLT;
 
 /**
  * A bean representing an **FC** section in GeTa data.
@@ -28,113 +41,62 @@ import java.util.List;
  *
  */
 public class GeTaFC {
+	
+	private static final Logger logger = LoggerFactory.getLogger(GeTaFC.class);
+	
+	private final Map<String, Object> annotations = new HashMap<>();
+	private List<GeTaLL> ll;
+	private GeTaEd ed;
 
-	private final List<GeTaLL> lls = new ArrayList<>();
-	private final List<GeTaEd> eds = new ArrayList<>();
-	private String nr, end, ends, trfid, fidleted, fidlet;
-
-	/**
-	 * @return the nr
-	 */
-	public final String getNR() {
-		return nr;
+	@JsonCreator
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public GeTaFC(@JsonProperty(GeTaMapper.FIDLET) String fidlet,
+			@JsonProperty(GeTaMapper.FIDLETED) String fidleted,
+			@JsonProperty(GeTaMapper.TRFID) String trfid,
+			@JsonProperty(GeTaMapper.pLB) Integer plb,
+			@JsonProperty(GeTaMapper.pPB) Integer ppb,
+			@JsonProperty(GeTaMapper.Ed) GeTaEd ed,
+			@JsonProperty(GeTaMapper.LL) List<GeTaLL> ll) {
+				this.ll = ll;
+				this.ed = ed;
+				annotations.put(GeTaMapper.FIDLET, fidlet);
+				annotations.put(GeTaMapper.FIDLETED, fidleted);
+				annotations.put(GeTaMapper.TRFID, trfid);
+				annotations.put(GeTaMapper.pLB, plb);
+				annotations.put(GeTaMapper.pPB, ppb);
+				// Remove null values from map
+				Iterables.removeIf(annotations.values(), Predicates.isNull());
 	}
 
 	/**
-	 * @param nr
-	 *            the nr to set
+	 * @return the ll
 	 */
-	public final void setNR(String nr) {
-		this.nr = nr;
+	public final List<GeTaLL> getLl() {
+		return ll;
 	}
 
 	/**
-	 * @return the end
+	 * @return the annotations
 	 */
-	public final String getEND() {
-		return end;
+	public final Map<String, Object> getAnnotations() {
+		return annotations;
 	}
 
 	/**
-	 * @param end
-	 *            the end to set
+	 * @return the ed
 	 */
-	public final void setEND(String end) {
-		this.end = end;
+	public final GeTaEd getEd() {
+		return ed;
+	}
+	
+	/**
+	 * Whether this FC instance has Ed annotations.
+	 *
+	 * @return
+	 */
+	public final boolean hasEd() {
+		return ed != null;
 	}
 
-	/**
-	 * @return the ends
-	 */
-	public final String getENDS() {
-		return ends;
-	}
-
-	/**
-	 * @param ends
-	 *            the ends to set
-	 */
-	public final void setENDS(String ends) {
-		this.ends = ends;
-	}
-
-	/**
-	 * @return the lls
-	 */
-	public final List<GeTaLL> getLLs() {
-		return lls;
-	}
-
-	/**
-	 * @return the trfid
-	 */
-	public final String getTRFID() {
-		return trfid;
-	}
-
-	/**
-	 * @param trfid
-	 *            the trfid to set
-	 */
-	public final void setTRFID(String trfid) {
-		this.trfid = trfid;
-	}
-
-	/**
-	 * @return the fidleted
-	 */
-	public final String getFIDLETED() {
-		return fidleted;
-	}
-
-	/**
-	 * @param fidleted
-	 *            the fidleted to set
-	 */
-	public final void setFIDLETED(String fidleted) {
-		this.fidleted = fidleted;
-	}
-
-	/**
-	 * @return the fidlet
-	 */
-	public final String getFIDLET() {
-		return fidlet;
-	}
-
-	/**
-	 * @param fidlet
-	 *            the fidlet to set
-	 */
-	public final void setFIDLET(String fidlet) {
-		this.fidlet = fidlet;
-	}
-
-	/**
-	 * @return the eds
-	 */
-	public final List<GeTaEd> getEDs() {
-		return eds;
-	}
 
 }

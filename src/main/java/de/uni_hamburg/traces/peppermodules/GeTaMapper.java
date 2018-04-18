@@ -20,18 +20,13 @@ package de.uni_hamburg.traces.peppermodules;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
 import org.corpus_tools.pepper.common.DOCUMENT_STATUS;
 import org.corpus_tools.pepper.impl.PepperMapperImpl;
 import org.corpus_tools.pepper.modules.PepperMapper;
@@ -41,11 +36,9 @@ import org.corpus_tools.salt.common.SDocumentGraph;
 import org.corpus_tools.salt.common.SSpan;
 import org.corpus_tools.salt.common.STextualDS;
 import org.corpus_tools.salt.common.SToken;
-import org.corpus_tools.salt.core.SAnnotation;
 import org.corpus_tools.salt.core.SLayer;
 import org.corpus_tools.salt.exceptions.SaltInsertionException;
 import org.eclipse.emf.common.util.URI;
-import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,16 +49,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.uni_hamburg.traces.peppermodules.model.dea.GeTaATT;
-import de.uni_hamburg.traces.peppermodules.model.dea.GeTaDEAAnn;
-import de.uni_hamburg.traces.peppermodules.model.ea.GeTaEd;
+import de.uni_hamburg.traces.peppermodules.model.dea.GeTaDEA;
+import de.uni_hamburg.traces.peppermodules.model.ea.GeTaFidalword;
+import de.uni_hamburg.traces.peppermodules.model.ea.GeTaEA;
 import de.uni_hamburg.traces.peppermodules.model.ea.GeTaFC;
-import de.uni_hamburg.traces.peppermodules.model.ea.GeTaJson;
-import de.uni_hamburg.traces.peppermodules.model.ea.GeTaLL;
-import de.uni_hamburg.traces.peppermodules.model.ea.GeTaWord;
+import de.uni_hamburg.traces.peppermodules.model.nea.GeTaNEA;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaAL;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaLT;
-import de.uni_hamburg.traces.peppermodules.model.tea.GeTaTEAAnn;
+import de.uni_hamburg.traces.peppermodules.model.tea.GeTaTEA;
 
 /**
  * The mapper class doing the actual mapping work.
@@ -90,6 +81,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	public static final String TR = "TR";
 	/** Original script type */
 	public static final String SCR = "SCR";
+	/** Graphical unit words */
+	public static final String FIDALWORDS = "FIDALWORDS";
 	
 	// █ FIDALWORD (= GeTaWord) annotations █
 	/** Graphical unit id */
@@ -112,6 +105,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	public static final String NE = "NE";
 	/** Comment */
 	public static final String Comm = "Comm";
+	/** Array of fidal letter objects */
+	public static final String FC = "FC";
 	
 	/* 
 	 * █ FIDALWORD > FC █
@@ -128,7 +123,9 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/** Page break number */
 	public static final String pPB = "pPB";
 	/** Editorial annotations */
-	public static final String edAnnot = "edAnnot";
+	public static final String Ed = "Ed";
+	/** Array of transliteration letter objects */
+	public static final String LL = "LL";
 		
 	/* 
 	 * █ FIDALWORD > FC > LL █
@@ -146,6 +143,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	public static final String TOKL = "TOKL";
 	/** Id of the named entity to which a token belongs */
 	public static final String NEId = "NEId";
+	/** Morphological annotation object */
+	public static final String M = "M";
 	
 	/*
 	 * █ Token annotations > M █
@@ -153,6 +152,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	 */
 	/** Whether the token can be part of a named entity */
 	public static final String ne = "ne";
+	/** Array of tag objects */
+	public static final String LT = "LT";
 	
 	/*
 	 * █ Token annotations > M > LT █
@@ -160,6 +161,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	 */
 	/** Tag name */
 	public static final String NT = "NT";
+	/** Array of attribute objects */
+	public static final String AL = "AL";
 
 	/*
 	 * █ Token annotations > M > LT > AL █
@@ -248,7 +251,22 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	// Comment
 	// Comm already included elsewhere
 	
-	// ███ Quotation annotations ███
+	// ███ Quotation annotations ███try<String, List<GeTaWord>> sidAndTracesWord : sid2WordsMap.entrySet()) {
+//	Set<SToken> sidTokens = new HashSet<>();
+//	// Compile list of tokens governed by words in this sid
+//	for (GeTaWord word : sidAndTracesWord.getValue()) {
+//		for (String wordTid : word.getTids()) {
+//			for (SToken wordToken : tid2TokMap.get(wordTid)) {
+//				sidTokens.add(wordToken);
+//			}
+//		}
+//	}
+//	SSpan sidSpan = graph.createSpan(new ArrayList<SToken>(sidTokens));
+//	annoLayer.addNode(sidSpan);
+//	if (mapDEA) {
+//		annotateAnnoSpanWithDEAAnnos(sidSpan, sidAndTracesWord.getKey());
+//	}
+//}
 	// Quotation id
 	// Duplicate key ID is already accounted for above under graphical unit annotations
 	/** Reference to the work */
@@ -287,8 +305,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/*
 	 * OBJECTS
 	 */
-	private final Map<String, GeTaTEAAnn> tEAannMap = new HashMap<>();
-	private final Map<String, GeTaDEAAnn> dEAannMap = new HashMap<>();
+	private final Map<String, GeTaTEA> tEAannMap = new HashMap<>();
+	private final Map<String, GeTaDEA> dEAannMap = new HashMap<>();
 	private JsonParser jsonParser = null;
 	private boolean mapTEA = true;
 	private boolean mapDEA = true;
@@ -327,23 +345,23 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 
 		// Create a parseable String from file
 		URI resource = getResourceURI();
-		String path = resource.toFileString();
-		String tEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(TEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
-		String dEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(DEA_FILE_SUFFIX + "." + JSON_FILE_ENDING);
-		String nEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(NEA_FILE_SUFFIX + "." + JSON_FILE_ENDING);
-		String qEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(QEA_FILE_SUFFIX + "." + JSON_FILE_ENDING);
-		String metaEAPath = path.split(JSON_FILE_SUFFIX + ".json")[0].concat(MetaEA_FILE_SUFFIX + "." + JSON_FILE_ENDING);
-		File jsonFile = new File(path);
+		String eaPath = resource.toFileString();
+		String teaPath = eaPath.split(JSON_FILE_SUFFIX + ".json")[0].concat(TEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
+		String deaPath = eaPath.split(JSON_FILE_SUFFIX + ".json")[0].concat(DEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
+		String neaPath = eaPath.split(JSON_FILE_SUFFIX + ".json")[0].concat(NEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
+		String qEAPath = eaPath.split(JSON_FILE_SUFFIX + ".json")[0].concat(QEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
+		String metaEAPath = eaPath.split(JSON_FILE_SUFFIX + ".json")[0].concat(MetaEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
+		File eaFile = new File(eaPath);
 		
 		// Check what files to map
-		File tEAannFile = new File(tEAPath);
-		mapTEA = checkFileExists(tEAannFile, tEAPath);
+		File teaFile = new File(teaPath);
+		mapTEA = checkFileExists(teaFile, teaPath);
 		
-		File dEAFile = new File(dEAPath);
-		mapDEA = checkFileExists(dEAFile, dEAPath);
+		File deaFile = new File(deaPath);
+		mapDEA = checkFileExists(deaFile, deaPath);
 		
-//		File nEAFile = new File(nEAPath);
-//		mapNEA = checkFileExists(nEAFile, nEAPath);
+		File neaFile = new File(neaPath);
+		mapNEA = checkFileExists(neaFile, neaPath);
 //		
 //		File qEAFile = new File(qEAPath);
 //		mapQEA = checkFileExists(qEAFile, qEAPath);
@@ -353,56 +371,80 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 		
 		// Initiate the mapping process for .json and .ann files
 		try {
-			ObjectMapper jsonMapper = new ObjectMapper();
-			ObjectMapper tEAMapper = new ObjectMapper();
-			tEAMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
+			ObjectMapper eaMapper = new ObjectMapper();
+			ObjectMapper teaMapper = new ObjectMapper();
+			teaMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
 			ObjectMapper dEAMapper = new ObjectMapper();
-			tEAMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
-//			ObjectMapper nEAMapper = new ObjectMapper();
-//			tEAMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
+			teaMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
+			ObjectMapper neaMapper = new ObjectMapper();
+			neaMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
 //			ObjectMapper qEAMapper = new ObjectMapper();
 //			tEAMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
 //			ObjectMapper metaEAMapper = new ObjectMapper();
 //			metaEAMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME Remove once all is in
-			GeTaJson json;
-			List<GeTaTEAAnn> tEAanns = null;
-			List<GeTaDEAAnn> dEAanns = null;
-//			List<GeTaDEAAnn> nEAanns = null;
-//			List<GeTaDEAAnn> qEAanns = null;
-//			List<GeTaDEAAnn> metaEAanns = null;
+			GeTaEA ea;
+			List<GeTaTEA> tea = null;
+			List<GeTaDEA> dea = null;
+			List<GeTaNEA> nea = null;
+//			List<GeTaDEA> qEAanns = null;
+//			List<GeTaDEA> metaEAanns = null;
 			try {
-				json = jsonMapper.readValue(jsonFile, new TypeReference<GeTaJson>() {
+				// Map the contents of the main file.
+				ea = eaMapper.readValue(eaFile, new TypeReference<GeTaEA>() {
 				});
 				if (mapTEA)
-					tEAanns = tEAMapper.readValue(tEAannFile, new TypeReference<List<GeTaTEAAnn>>() {
+					tea = teaMapper.readValue(teaFile, new TypeReference<List<GeTaTEA>>() {
 					});
 				if (mapDEA)
-					dEAanns = dEAMapper.readValue(dEAFile, new TypeReference<List<GeTaDEAAnn>>() {
+					dea = dEAMapper.readValue(deaFile, new TypeReference<List<GeTaDEA>>() {
 					});
-//				if (mapNEA)
-//					nEAanns = nEAMapper.readValue(nEAFile, new TypeReference<List<GeTaNEAAnn>>() {
-//					});
-//				if (mapQEA)
-//					qEAanns = qEAMapper.readValue(qEAFile, new TypeReference<List<GeTaQEAAnn>>() {
-//					});
-//				if (mapMetaEA)
-//					metaEAanns = metaEAMapper.readValue(metaEAFile, new TypeReference<List<GeTaMetaEAAnn>>() {
-//					});
+				 if (mapNEA)
+				 nea = neaMapper.readValue(neaFile, new TypeReference<List<GeTaNEA>>() {
+				 });
+				// if (mapQEA)
+				// qEAanns = qEAMapper.readValue(qEAFile, new
+				// TypeReference<List<GeTaQEAAnn>>() {
+				// });
+				// if (mapMetaEA)
+				// metaEAanns = metaEAMapper.readValue(metaEAFile, new
+				// TypeReference<List<GeTaMetaEAAnn>>() {
+				// });
 			}
 			catch (JsonMappingException | JsonParseException e) {
 				logger.error("Error while parsing JSON.", e);
 				return DOCUMENT_STATUS.FAILED;
 			}
-			if (mapTEA) {
-				for (GeTaTEAAnn tEAann : tEAanns) {
-					tEAannMap.put(tEAann.getId(), tEAann);
+			
+			/*
+			 * TEST EA ##############################################
+			 */
+			for (GeTaFidalword w : ea.getFidalwords()) {
+				for (GeTaFC fc : w.getFc()) {
+					if (fc.hasEd()) {
+					for (GeTaLT lt : fc.getEd().getLt()) {
+						logger.info("\n\n####################################\n");
+						for (GeTaAL a : lt.getAl()) {
+							for (Entry<String, String> an : a.getAnnotations().entrySet()) {
+								logger.info(" > " + an.getKey() + ":" + an.getValue());
+							}
+						}
+					}}
 				}
 			}
-			if (mapDEA) {
-				for (GeTaDEAAnn dEAann : dEAanns) {
-					dEAannMap.put(dEAann.getId(), dEAann);
-				}
-			}
+			/*
+			 * #######################################################
+			 */
+			
+//			if (mapTEA) {
+//				for (GeTaTEA tEAann : tEAanns) {
+//					tEAannMap.put(tEAann.getId(), tEAann);
+//				}
+//			}
+//			if (mapDEA) {
+//				for (GeTaDEA dEAann : dEAanns) {
+//					dEAannMap.put(dEAann.getId(), dEAann);
+//				}
+//			}
 //			if (mapNEA) {
 //				for (GeTaNEAAnn nEAann : nEAanns) {
 //					nEAannMap.put(nEAann.getId(), nEAann);
@@ -425,136 +467,108 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			 * ############################
 			 */
 			// Map document metadata
-			getDocument().createMetaAnnotation(TRACES_NAMESPACE, SCR, json.getSCR());
-			getDocument().createMetaAnnotation(TRACES_NAMESPACE, TR, json.getTR());
+			getDocument().createMetaAnnotation(TRACES_NAMESPACE, SCR, ea.getSCR());
+			getDocument().createMetaAnnotation(TRACES_NAMESPACE, TR, ea.getTR());
 
 			List<SSpan> annoSpans = new ArrayList<>();
 			SSpan objectAnnoSpan = null, objectBasicAnnoSpan = null, tRSpan = null, fIDEDSpan = null;
 			Map<String, List<SToken>> tid2TokMap = new HashMap<>();
 			// GeTaWord = entity in FIDALWORDS array
-			Map<String, List<GeTaWord>> sid2WordsMap = new HashMap<>();
+//			Map<String, List<GeTaWord>> sid2WordsMap = new HashMap<>(); FIXME
 
 			// Iterate through all GeTaWords and map accordingly
-			for (GeTaWord word : json.getWords()) {
-				for (String sid : word.getSids()) {
-					if (sid2WordsMap.get(sid) == null) {
-						sid2WordsMap.put(sid, new ArrayList<GeTaWord>(Arrays.asList(word)));
-					}
-					else {
-						sid2WordsMap.get(sid).add(word);
-					}
-				}
-				for (GeTaFC fc : word.getFCs()) {
-					List<SToken> tokList = new ArrayList<>();
-					for (GeTaLL ll : fc.getLLs()) {
-						text.setText(text.getText().concat(ll.getLAT()));
-						SToken tok = graph.createToken(text, text.getText().length() - ll.getLAT().length(), text.getText().length());
-						if (tid2TokMap.get(ll.getTID()) == null) {
-							tid2TokMap.put(ll.getTID(), new ArrayList<>(Arrays.asList(tok)));
-						}
-						else {
-							tid2TokMap.get(ll.getTID()).add(tok);
-						}
-						tokList.add(tok);
-					}
-					SSpan annoSpan = graph.createSpan(tokList);
-					annoSpans.add(annoSpan);
-					SSpan basicAnnoSpan = graph.createSpan(tokList);
-//					SSpan edAnnoSpan = graph.createSpan(tokList);
-					annoSpan.createAnnotation(TRACES_NAMESPACE, FIDLETED, fc.getFIDLETED());
-					annoSpan.createAnnotation(TRACES_NAMESPACE, TRFID, fc.getTRFID());
-					annoLayer.addNode(annoSpan);
-					basicAnnoSpan.createAnnotation(TRACES_NAMESPACE, FIDLET, fc.getFIDLET());
-					basicAnnoLayer.addNode(basicAnnoSpan);
-//					edLayer.addNode(edAnnoSpan);
-//					for (GeTaEd ed : fc.getEDs()) {
-//						edAnnoSpan.createAnnotation(TRACESED, aut, ed.getAUT());
-//						edAnnoSpan.createAnnotation(TRACESED, c, ed.getC());
-//						edAnnoSpan.createAnnotation(TRACESED, g, ed.getG());
-//						edAnnoSpan.createAnnotation(TRACESED, ne, ed.getNE());
-//						edAnnoSpan.createAnnotation(TRACESED, p, ed.getP());
-//						for (GeTaLT lt : ed.getLTs()) {
-//							SAnnotation nTanno;
-//							if ((nTanno = edAnnoSpan.getAnnotation(TRACESED + "::" + NT)) == null) {
-//								edAnnoSpan.createAnnotation(TRACESED, NT, lt.getNT());
-//							}
-//							else {
-//								String oldValue = nTanno.getValue_STEXT();
-//								nTanno.setValue(oldValue + ", " + lt.getNT());
-//							}
-//							for (GeTaAL al : lt.getALs()) {
-//								for (String[] nv : al.getNVs()) {
-//									try {
-//										edAnnoSpan.createAnnotation(TRACESED + "_" + AL, nv[0], nv[1]);
-//									}
-//									catch (SaltInsertionException e) {
-//										throw new PepperModuleException("Error in document " + getDocument().getName() + " for token " + word.getID() + ": Cannot insert annotation \"" + nv[0] + "\" because it already exists!", e);
-//									}
-//								}
-//							}
-//						}
+//			for (GeTaWord word : json.getWords()) {
+//				for (String sid : word.getSids()) {
+//					if (sid2WordsMap.get(sid) == null) {
+//						sid2WordsMap.put(sid, new ArrayList<GeTaWord>(Arrays.asList(word)));
 //					}
-				}
-				if (!annoSpans.isEmpty()) {
-					List<SToken> annoSpanTokens = new ArrayList<>();
-					for (SSpan span : annoSpans) {
-						annoSpanTokens.addAll(graph.getOverlappedTokens(span));
-					}
-					objectAnnoSpan = graph.createSpan(annoSpanTokens);
-					tRSpan = graph.createSpan(annoSpanTokens);
-					tRSpan.createAnnotation(TRACES, TR, word.getTR());
-					tRLayer.addNode(tRSpan);
-					fIDEDSpan = graph.createSpan(annoSpanTokens);
-					fIDEDSpan.createAnnotation(TRACES, FIDED, Jsoup.parse(word.getFIDED()).text());
-					fIDEDLayer.addNode(fIDEDSpan);
-					objectBasicAnnoSpan = graph.createSpan(annoSpanTokens);
-					objectBasicAnnoSpan.createAnnotation(TRACES, FID, word.getFID());
-					objectBasicAnnoSpan.createAnnotation(TRACES, FIDEDh, word.getFIDED());
-					objectBasicAnnoSpan.createAnnotation(TRACES, Comm, word.getCOMM());
-					
-					// Add word Id as meta annotation
-					objectBasicAnnoSpan.createMetaAnnotation(TRACES_NAMESPACE, ID, word.getID());
-					
-					basicAnnoLayer.addNode(objectBasicAnnoSpan);
-					annoLayer.addNode(objectAnnoSpan);
-
-				}
-				annoSpans.clear();
-				text.setText(text.getText().concat(" "));
-			}
+//					else {
+//						sid2WordsMap.get(sid).add(word);
+//					}
+//				}
+//				for (GeTaFC fc : word.getFCs()) {
+//					List<SToken> tokList = new ArrayList<>();
+//					for (GeTaLL ll : fc.getLLs()) {
+//						text.setText(text.getText().concat(ll.getLAT()));
+//						SToken tok = graph.createToken(text, text.getText().length() - ll.getLAT().length(), text.getText().length());
+//						if (tid2TokMap.get(ll.getTID()) == null) {
+//							tid2TokMap.put(ll.getTID(), new ArrayList<>(Arrays.asList(tok)));
+//						}
+//						else {
+//							tid2TokMap.get(ll.getTID()).add(tok);
+//						}
+//						tokList.add(tok);
+//					}
+//					SSpan annoSpan = graph.createSpan(tokList);
+//					annoSpans.add(annoSpan);
+//					SSpan basicAnnoSpan = graph.createSpan(tokList);
+//					annoSpan.createAnnotation(TRACES_NAMESPACE, FIDLETED, fc.getFIDLETED());
+//					annoSpan.createAnnotation(TRACES_NAMESPACE, TRFID, fc.getTRFID());
+//					annoLayer.addNode(annoSpan);
+//					basicAnnoSpan.createAnnotation(TRACES_NAMESPACE, FIDLET, fc.getFIDLET());
+//					basicAnnoLayer.addNode(basicAnnoSpan);
+//				}
+//				if (!annoSpans.isEmpty()) {
+//					List<SToken> annoSpanTokens = new ArrayList<>();
+//					for (SSpan span : annoSpans) {
+//						annoSpanTokens.addAll(graph.getOverlappedTokens(span));
+//					}
+//					objectAnnoSpan = graph.createSpan(annoSpanTokens);
+//					tRSpan = graph.createSpan(annoSpanTokens);
+//					tRSpan.createAnnotation(TRACES, TR, word.getTR());
+//					tRLayer.addNode(tRSpan);
+//					fIDEDSpan = graph.createSpan(annoSpanTokens);
+//					fIDEDSpan.createAnnotation(TRACES, FIDED, Jsoup.parse(word.getFIDED()).text());
+//					fIDEDLayer.addNode(fIDEDSpan);
+//					objectBasicAnnoSpan = graph.createSpan(annoSpanTokens);
+//					objectBasicAnnoSpan.createAnnotation(TRACES, FID, word.getFID());
+//					objectBasicAnnoSpan.createAnnotation(TRACES, FIDEDh, word.getFIDED());
+//					objectBasicAnnoSpan.createAnnotation(TRACES, Comm, word.getCOMM());
+//					
+//					// Add word Id as meta annotation
+//					objectBasicAnnoSpan.createMetaAnnotation(TRACES_NAMESPACE, ID, word.getID());
+//					
+//					basicAnnoLayer.addNode(objectBasicAnnoSpan);
+//					annoLayer.addNode(objectAnnoSpan);
+//
+//				}
+//				annoSpans.clear();
+//				text.setText(text.getText().concat(" "));
+//			}
 			/*
-			 * Connect the Fidel words with their linguistic annotations. The
+			 * Connect the Fidal words with their linguistic annotations. The
 			 * connection is made via the Tids.
 			 */
-			for (Entry<String, List<SToken>> tracesToken : tid2TokMap.entrySet()) {
-				SSpan tracesTokenSpan = graph.createSpan(tracesToken.getValue());
-				annoLayer.addNode(tracesTokenSpan);
-				if (mapTEA) {
-					annotateAnnoSpanWithTEAAnnos(tracesTokenSpan, tracesToken.getKey());
-				}
-			}
+//			for (Entry<String, List<SToken>> tracesToken : tid2TokMap.entrySet()) {
+//				SSpan tracesTokenSpan = graph.createSpan(tracesToken.getValue());
+//				annoLayer.addNode(tracesTokenSpan);
+//				if (mapTEA) {
+//					annotateAnnoSpanWithTEAAnnos(tracesTokenSpan, tracesToken.getKey());
+//				}
+//			}
 			/*
 			 * Connect the Fidel words with their section annotations. The
 			 * connection is made via the Sids.
 			 */
-			for (Entry<String, List<GeTaWord>> sidAndTracesWord : sid2WordsMap.entrySet()) {
-				Set<SToken> sidTokens = new HashSet<>();
-				// Compile list of tokens governed by words in this sid
-				for (GeTaWord word : sidAndTracesWord.getValue()) {
-					for (String wordTid : word.getTids()) {
-						for (SToken wordToken : tid2TokMap.get(wordTid)) {
-							sidTokens.add(wordToken);
-						}
-					}
-				}
-				SSpan sidSpan = graph.createSpan(new ArrayList<SToken>(sidTokens));
-				annoLayer.addNode(sidSpan);
-				if (mapDEA) {
-					annotateAnnoSpanWithDEAAnnos(sidSpan, sidAndTracesWord.getKey());
-				}
-			}
+			// FIXME: 
+//			for (Entry<String, List<GeTaWord>> sidAndTracesWord : sid2WordsMap.entrySet()) {
+//				Set<SToken> sidTokens = new HashSet<>();
+//				// Compile list of tokens governed by words in this sid
+//				for (GeTaWord word : sidAndTracesWord.getValue()) {
+//					for (String wordTid : word.getTids()) {
+//						for (SToken wordToken : tid2TokMap.get(wordTid)) {
+//							sidTokens.add(wordToken);
+//						}
+//					}
+//				}
+//				SSpan sidSpan = graph.createSpan(new ArrayList<SToken>(sidTokens));
+//				annoLayer.addNode(sidSpan);
+//				if (mapDEA) {
+//					annotateAnnoSpanWithDEAAnnos(sidSpan, sidAndTracesWord.getKey());
+//				}
+//			}
 		} catch (IOException e) {
-			throw new PepperModuleException("Error parsing the JSON file " + jsonFile.getName() + "!", e);
+			throw new PepperModuleException("Error parsing the JSON file " + eaFile.getName() + "!", e);
 		}
 		return (DOCUMENT_STATUS.COMPLETED);
 	}
@@ -593,78 +607,67 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	 * @param sid
 	 */
 	private void annotateAnnoSpanWithDEAAnnos(SSpan sidSpan, String sid) {
-		GeTaDEAAnn dea = dEAannMap.get(sid);
+		GeTaDEA dea = dEAannMap.get(sid);
 		if (dea == null) {
 			logger.info("Could not find annotations for " + Sid + " " + sid + " near " + jsonParser.getCurrentLocation() + "!");
 		}
 		else {
-			sidSpan.createAnnotation(TRACES_NAMESPACE, Id, dea.getId());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, WB, dea.getWB());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, WE, dea.getWE());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, NRI, dea.getNRI());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, NR, dea.getNR());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, LE, dea.getLE());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, G, dea.getG());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, C, dea.getC());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, DP, dea.getDP());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, NA, dea.getNA());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, CR, dea.getCR());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, HWB, dea.getHWB());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, HWE, dea.getHWE());
-			sidSpan.createAnnotation(TRACES_NAMESPACE, DC, dea.getDC());
-		}
-	}
-
-	/**
-	 * Maps the annotations from the GeTa .ann annotations file to the
-	 * {@link SSpan}s that are to be annotated.
-	 *
-	 * @param annoSpan
-	 * @param tid
-	 */
-	private void annotateAnnoSpanWithTEAAnnos(SSpan annoSpan, String tid) {
-		GeTaTEAAnn tea = tEAannMap.get(tid);
-		if (tea == null) {
-			logger.info("Could not find annotations for " + Tid + " " + tid + " near " + jsonParser.getCurrentLocation() + "!");
-		}
-		else {
-			annoSpan.createAnnotation(TRACES, TOKL, tea.getTokl());
-			annoSpan.createAnnotation(TRACES_NAMESPACE, ne, tea.ne);
-			for (GeTaLT lt : tea.getLTs()) {
-				annoSpan.createAnnotation(TRACES_NAMESPACE, NT, lt.getNT());
-				for (GeTaAL al : lt.getALs()) {
-					for (String[] nv : al.getNVs()) {
-						if (nv[1] != null && !nv[1].isEmpty()) {
-							try {
-								/* 
-								 * Special case: split up "lex" annotations which contain
-								 * Tid and actual value separated by a double dash "--".
-								 */
-								if (nv[0].equals("lex")) {
-									annoSpan.createAnnotation(TRACES_NAMESPACE, "lem", nv[1].split("--")[1]);
-								}
-								else {
-									/*
-									 *  Create the annotation, and replace whitespaces, which
-									 *  are illegal as annotation keys, with dashes.
-									 */
-									annoSpan.createAnnotation(TRACES, nv[0].replaceAll(" ", "-"), nv[1]);
-								}
-							}
-							catch (SaltInsertionException e) {
-								PepperModuleException ex = new PepperModuleException("Duplicate annotation name in " + getDocument().getName() + "!\n" + "Current annotation: " + TRACES + "::" + nv[0] + "=" + nv[1] + "\n" + "Existing annotation: " + annoSpan.getAnnotation(TRACES, nv[0]) + "\n" + "Token ID: " + tid, e);
-								logger.error("Conversion error: ", ex);
-								throw ex;
-							}
-						}
-						else {
-							logger.trace("Found an empty annotation (Tid: " + tid + "): \"" + nv[0] + "\"! Ignoring it.");
-						}
-					}
-				}
+			for (Entry<String, String> entry : dea.getAnnotations().entrySet()) {
+				sidSpan.createAnnotation(TRACES_NAMESPACE, entry.getKey(), entry.getValue());
 			}
 		}
 	}
+
+//	/**
+//	 * Maps the annotations from the GeTa .ann annotations file to the
+//	 * {@link SSpan}s that are to be annotated.
+//	 *
+//	 * @param annoSpan
+//	 * @param tid
+//	 */
+//	private void annotateAnnoSpanWithTEAAnnos(SSpan annoSpan, String tid) {
+//		GeTaTEA tea = tEAannMap.get(tid);
+//		if (tea == null) {
+//			logger.info("Could not find annotations for " + Tid + " " + tid + " near " + jsonParser.getCurrentLocation() + "!");
+//		}
+//		else {
+//			annoSpan.createAnnotation(TRACES, TOKL, tea.getTokl());
+//			annoSpan.createAnnotation(TRACES_NAMESPACE, ne, tea.ne);
+//			for (GeTaLT lt : tea.getLTs()) {
+//				annoSpan.createAnnotation(TRACES_NAMESPACE, NT, lt.getNT());
+//				for (GeTaAL al : lt.getALs()) {
+//					for (String[] nv : al.getNVs()) {
+//						if (nv[1] != null && !nv[1].isEmpty()) {
+//							try {
+//								/* 
+//								 * Special case: split up "lex" annotations which contain
+//								 * Tid and actual value separated by a double dash "--".
+//								 */
+//								if (nv[0].equals("lex")) {
+//									annoSpan.createAnnotation(TRACES_NAMESPACE, "lem", nv[1].split("--")[1]);
+//								}
+//								else {
+//									/*
+//									 *  Create the annotation, and replace whitespaces, which
+//									 *  are illegal as annotation keys, with dashes.
+//									 */
+//									annoSpan.createAnnotation(TRACES, nv[0].replaceAll(" ", "-"), nv[1]);
+//								}
+//							}
+//							catch (SaltInsertionException e) {
+//								PepperModuleException ex = new PepperModuleException("Duplicate annotation name in " + getDocument().getName() + "!\n" + "Current annotation: " + TRACES + "::" + nv[0] + "=" + nv[1] + "\n" + "Existing annotation: " + annoSpan.getAnnotation(TRACES, nv[0]) + "\n" + "Token ID: " + tid, e);
+//								logger.error("Conversion error: ", ex);
+//								throw ex;
+//							}
+//						}
+//						else {
+//							logger.trace("Found an empty annotation (Tid: " + tid + "): \"" + nv[0] + "\"! Ignoring it.");
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	/**
 	 * Creates an {@link SLayer} with the given name
