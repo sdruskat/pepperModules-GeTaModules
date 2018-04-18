@@ -549,6 +549,10 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 				for (Entry<String, String> a : fidalword.getAnnotations().entrySet()) {
 					fidalwordSpan.createAnnotation(TRACES_NAMESPACE, a.getKey(), a.getValue());
 				}
+				// Fix HTML in FIDED
+				String fided = fidalword.getFided();
+				fidalwordSpan.createAnnotation(TRACES_NAMESPACE, FIDEDh, fided);
+				fidalwordSpan.getAnnotation(TRACES_NAMESPACE, FIDED).setValue(Jsoup.parse(fided).text());
 //				if (!annoSpans.isEmpty()) {
 //					List<SToken> annoSpanTokens = new ArrayList<>();
 //					for (SSpan span : annoSpans) {
