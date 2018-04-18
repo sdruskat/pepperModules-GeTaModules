@@ -18,12 +18,41 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules.model.nea;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import de.uni_hamburg.traces.peppermodules.GeTaMapper;
+
 /**
  * TODO Description
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
  */
-public class GeTaRefWord {
+public class GeTaRef {
+	
+	private String wid;
+	private List<String> tid;
+
+	public GeTaRef(@JsonProperty(GeTaMapper.WID) String wid,
+			@JsonProperty(GeTaMapper.TID) List<String> tid) {
+		this.wid = wid;
+		this.tid = tid;
+	}
+
+	/**
+	 * @return the wid
+	 */
+	public final String getWid() {
+		return wid;
+	}
+
+	/**
+	 * @return the tid
+	 */
+	public final List<String> getTid() {
+		return tid;
+	}
 
 }

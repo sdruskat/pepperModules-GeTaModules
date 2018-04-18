@@ -16,7 +16,7 @@
  * Contributors:
  *     Stephan Druskat - initial API and implementation
  *******************************************************************************/
-package de.uni_hamburg.traces.peppermodules.model.nea;
+package de.uni_hamburg.traces.peppermodules.model.metaea;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,35 +29,52 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 
 import de.uni_hamburg.traces.peppermodules.GeTaMapper;
-import de.uni_hamburg.traces.peppermodules.model.tea.GeTaAL;
 
 /**
- * An object representation of a JSON object from a GeTa *NEA.ann annotation file.
+ * TODO Description
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
  */
-public class GeTaNEA {
+public class GeTaMetaEA {
 	
+	private final Map<String, Object> annotations = new HashMap<>();
 	private String id;
-	private final Map<String, String> annotations = new HashMap<>();
-	private List<GeTaRef> ref;
-	private List<GeTaAL> feat;
-
+	private List<String> parts;
+	
 	@JsonCreator
-	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
-	public GeTaNEA(@JsonProperty(GeTaMapper.ID) String id,
-			@JsonProperty(GeTaMapper.R) String r,
-			@JsonProperty(GeTaMapper.T) String t,
-			@JsonProperty(GeTaMapper.ref) List<GeTaRef> ref,
-			@JsonProperty(GeTaMapper.feat) List<GeTaAL> feat) {
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public GeTaMetaEA(@JsonProperty(GeTaMapper.ID) String id,
+			@JsonProperty(GeTaMapper.ANNOT) String annot,
+			@JsonProperty(GeTaMapper.SOFT) String soft,
+			@JsonProperty(GeTaMapper.NAME) String name,
+			@JsonProperty(GeTaMapper.LANG) String lang,
+			@JsonProperty(GeTaMapper.DATE) String date,
+			@JsonProperty(GeTaMapper.EDITION) String edition,
+			@JsonProperty(GeTaMapper.PARTS) List<String> parts,
+			@JsonProperty(GeTaMapper.TR) Integer tr,
+			@JsonProperty(GeTaMapper.SCR) Integer scr,
+			@JsonProperty(GeTaMapper.Comm) String comm) {
 		this.id = id;
-		this.ref = ref;
-		this.feat = feat;
-		annotations.put(GeTaMapper.T, t);
-		annotations.put(GeTaMapper.R, r);
+		this.parts = parts;
+		annotations.put(GeTaMapper.ANNOT, annot);
+		annotations.put(GeTaMapper.SOFT, soft);
+		annotations.put(GeTaMapper.NAME, name);
+		annotations.put(GeTaMapper.LANG, lang);
+		annotations.put(GeTaMapper.DATE, date);
+		annotations.put(GeTaMapper.EDITION, edition);
+		annotations.put(GeTaMapper.TR, tr);
+		annotations.put(GeTaMapper.SCR, scr);
+		annotations.put(GeTaMapper.Comm, comm);
 		// Remove null values from map
 		Iterables.removeIf(annotations.values(), Predicates.isNull());
+	}
+
+	/**
+	 * @return the annotations
+	 */
+	public final Map<String, Object> getAnnotations() {
+		return annotations;
 	}
 
 	/**
@@ -68,24 +85,10 @@ public class GeTaNEA {
 	}
 
 	/**
-	 * @return the annotations
+	 * @return the parts
 	 */
-	public final Map<String, String> getAnnotations() {
-		return annotations;
-	}
-
-	/**
-	 * @return the ref
-	 */
-	public final List<GeTaRef> getRef() {
-		return ref;
-	}
-
-	/**
-	 * @return the feat
-	 */
-	public final List<GeTaAL> getFeat() {
-		return feat;
+	public final List<String> getParts() {
+		return parts;
 	}
 
 }

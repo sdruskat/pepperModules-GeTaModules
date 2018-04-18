@@ -56,16 +56,22 @@ public class GeTaFidalword {
 
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public GeTaFidalword(@JsonProperty(GeTaMapper.Id) String id, @JsonProperty(GeTaMapper.FID) String fid,
-			@JsonProperty(GeTaMapper.FIDED) String fided, @JsonProperty(GeTaMapper.TR) String tr,
-			@JsonProperty(GeTaMapper.Sid) List<String> sid, @JsonProperty(GeTaMapper.Qid) List<String> qid,
-			@JsonProperty(GeTaMapper.Tid) List<String> tid, @JsonProperty(GeTaMapper.NE) String ne,
-			@JsonProperty(GeTaMapper.Comm) String comm, @JsonProperty(GeTaMapper.FC) List<GeTaFC> fc) {
+	public GeTaFidalword(@JsonProperty(GeTaMapper.Id) String id, 
+			@JsonProperty(GeTaMapper.FID) String fid,
+			@JsonProperty(GeTaMapper.FIDED) String fided, 
+			@JsonProperty(GeTaMapper.TR) String tr,
+			@JsonProperty(GeTaMapper.Sid) List<String> sid, 
+			@JsonProperty(GeTaMapper.Qid) List<String> qid,
+			@JsonProperty(GeTaMapper.Tid) List<String> tid, 
+			@JsonProperty(GeTaMapper.NE) String ne,
+			@JsonProperty(GeTaMapper.Comm) String comm, 
+			@JsonProperty(GeTaMapper.FC) List<GeTaFC> fc) {
 		this.id = id;
 		this.sid = sid;
 		this.qid = qid;
 		this.tid = tid;
 		this.fc = fc;
+		this.fided = fided;
 		annotations.put(GeTaMapper.FID, fid);
 		annotations.put(GeTaMapper.FIDED, fided);
 		annotations.put(GeTaMapper.TR, tr);

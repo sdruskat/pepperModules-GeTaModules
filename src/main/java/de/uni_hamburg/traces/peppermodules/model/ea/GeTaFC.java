@@ -18,12 +18,9 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules.model.ea;
 
-import java.util.HashMap;
+import java.util.HashMap; 
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -32,7 +29,6 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 
 import de.uni_hamburg.traces.peppermodules.GeTaMapper;
-import de.uni_hamburg.traces.peppermodules.model.tea.GeTaLT;
 
 /**
  * A bean representing an **FC** section in GeTa data.
@@ -41,8 +37,6 @@ import de.uni_hamburg.traces.peppermodules.model.tea.GeTaLT;
  *
  */
 public class GeTaFC {
-	
-	private static final Logger logger = LoggerFactory.getLogger(GeTaFC.class);
 	
 	private final Map<String, Object> annotations = new HashMap<>();
 	private List<GeTaLL> ll;

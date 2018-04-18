@@ -61,10 +61,10 @@ public class GeTaDEA {
 			@JsonProperty(GeTaMapper.G) String g, 
 			@JsonProperty(GeTaMapper.C) String c, 
 			@JsonProperty(GeTaMapper.DP) String dp, 
-			@JsonProperty(GeTaMapper. NA) String na, 
+			@JsonProperty(GeTaMapper.NA) String na, 
 			@JsonProperty(GeTaMapper.CR) String cr, 
-			@JsonProperty(GeTaMapper. HWB) String hwb, 
-			@JsonProperty(GeTaMapper. HWE) String hwe, 
+			@JsonProperty(GeTaMapper.HWB) String hwb, 
+			@JsonProperty(GeTaMapper.HWE) String hwe, 
 			@JsonProperty(GeTaMapper.DC) List<String> dc) {
 		this.id = id;
 		this.dc = dc;

@@ -18,7 +18,7 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules;
 
-import java.io.File;
+import java.io.File; 
 import java.io.IOException;
 import org.corpus_tools.pepper.impl.PepperImporterImpl;
 import org.corpus_tools.pepper.modules.PepperImporter;
@@ -32,6 +32,8 @@ import org.eclipse.emf.common.util.URI;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.uni_hamburg.traces.peppermodules.properties.GeTaImporterProperties;
 
 /**
  * The main importer class which is responsible for setting up
@@ -54,6 +56,7 @@ public class GeTaImporter extends PepperImporterImpl implements PepperImporter{
 		setDesc("An importer for the custom JSON-based format used by the GeTa research project (https://www.traces.uni-hamburg.de/).");
 		addSupportedFormat("traces-json", "1.0", null);
 		getDocumentEndings().add("json");
+		this.setProperties(new GeTaImporterProperties());
 	}
 	
 	/* 
