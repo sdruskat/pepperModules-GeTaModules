@@ -46,7 +46,7 @@ public class GeTaNEA {
 
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
-	public GeTaNEA(@JsonProperty(GeTaMapper.ID) String id,
+	public GeTaNEA(@JsonProperty(GeTaMapper.Id) String id,
 			@JsonProperty(GeTaMapper.R) String r,
 			@JsonProperty(GeTaMapper.T) String t,
 			@JsonProperty(GeTaMapper.ref) List<GeTaRef> ref,
