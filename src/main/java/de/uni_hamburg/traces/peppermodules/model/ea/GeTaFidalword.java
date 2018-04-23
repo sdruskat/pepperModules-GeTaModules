@@ -73,9 +73,14 @@ public class GeTaFidalword {
 		this.fc = fc;
 		this.fided = fided;
 		this.ne = ne;
+		/* 
+		 * Treat TR extra, as it will have to be applied
+		 * to its own span to make multiple segmentation
+		 * visualization work.
+		 */
+		this.tr = tr;
 		annotations.put(GeTaMapper.FID, fid);
 		annotations.put(GeTaMapper.FIDED, fided);
-		annotations.put(GeTaMapper.TR, tr);
 		annotations.put(GeTaMapper.Comm, comm);
 		// Remove null values from map
 		Iterables.removeIf(annotations.keySet(), Predicates.isNull());

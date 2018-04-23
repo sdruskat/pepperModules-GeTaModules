@@ -151,7 +151,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	// Duplicate key Tid is already accounted for above under FIDALWORD
 	// annotations
 
-	// ███ Token annotations ███
+	// ███ Token annotations (TEA) ███
 	/** Token Id */
 	public static final String Id = "Id";
 	/** Token label */
@@ -330,8 +330,17 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 
 	private static final String GETA_NAMESPACE = "GeTa";
 	private static final String GETA_META_NAMESPACE = GETA_NAMESPACE + "_META";
+	private static final String GETA_NAMESPACE_TEA = GETA_NAMESPACE + "_TEA";
+	private static final String GETA_NAMESPACE_DEA = GETA_NAMESPACE + "_DEA";
+	private static final String GETA_NAMESPACE_NEA = GETA_NAMESPACE + "_NEA";
+	
+	// Special annotation values
 	// "lex" N:V attribute
 	private static final String lex = "lex";
+	private static final String vocalized = "vocalized";
+	private static final String unvocalized = "unvocalized";
+	private static final String GEEZ = "Ge'ez";
+	private static final String SOUTH_ARABIAN = "SouthArabian";
 
 	/*
 	 * @copydoc @see org.corpus_tools.pepper.impl.PepperMapperImpl#mapSCorpus()
@@ -516,12 +525,15 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			 * Avoid dupllication of keys and resulting SaltExceptions by
 			 * suffixing namespace for metadata annotations with "_META".
 			 */
-			getDocument().createMetaAnnotation(GETA_NAMESPACE, SCR, ea.getSCR());
-			getDocument().createMetaAnnotation(GETA_NAMESPACE, TR, ea.getTR());
+			getDocument().createMetaAnnotation(GETA_NAMESPACE, SCR, ea.getSCR() == 0 ? GEEZ : SOUTH_ARABIAN);
+			getDocument().createMetaAnnotation(GETA_NAMESPACE, TR, ea.getTR() == 0 ? vocalized : unvocalized);
 			if (mapMetaEA) {
 				for (Entry<String, Object> meta : metaea.getAnnotations().entrySet()) {
-					getDocument().createMetaAnnotation(GETA_NAMESPACE + "_META", meta.getKey(), meta.getValue());
+					getDocument().createMetaAnnotation(GETA_META_NAMESPACE, meta.getKey(), meta.getValue());
 				}
+				// Map SCR and TR customly
+				getDocument().createMetaAnnotation(GETA_META_NAMESPACE, SCR, ea.getSCR() == 0 ? GEEZ : SOUTH_ARABIAN);
+				getDocument().createMetaAnnotation(GETA_META_NAMESPACE, TR, ea.getTR() == 0 ? vocalized : unvocalized);
 				// ID contains a URL
 				if (metaea.getId() != null) {
 					String rawValue = metaea.getId();
@@ -610,7 +622,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 					// Add FC-level annotations to FC
 					SSpan singleFcSpan = graph.createSpan(fcTokens);
 					fcSpans.add(singleFcSpan);
-					annotateSpan(fc.getAnnotations(), singleFcSpan);
+					annotateSpan(fc.getAnnotations(), singleFcSpan, GETA_NAMESPACE);
 					// Add Ed-level annotations to FC
 					GeTaEd ed = fc.getEd();
 					if (ed != null) {
@@ -628,7 +640,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 										ltSpan.createAnnotation(GETA_NAMESPACE, NT, lt.getNt());
 									}
 									if (als != null) {
-										annotateSpanWithALs(als, ltSpan);
+										annotateSpanWithALs(als, ltSpan, GETA_NAMESPACE);
 									}
 								}
 							}
@@ -637,7 +649,13 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 				}
 				// Add Fidalword-level annotations to Fidalword
 				SSpan fidalwordSpan = graph.createSpan(fidalwordTokens);
-				annotateSpan(fidalword.getAnnotations(), fidalwordSpan);
+				annotateSpan(fidalword.getAnnotations(), fidalwordSpan, GETA_NAMESPACE);
+				/* 
+				 * Need an extra span just for TR annotations to make
+				 * multiple segmentation visualization work
+				 */
+				SSpan trSpan = graph.createSpan(fidalwordTokens);
+				trSpan.createAnnotation(GETA_NAMESPACE, TR, fidalword.getTr());
 				// Fix HTML in FIDED
 				String fided = fidalword.getFided();
 				fidalwordSpan.createAnnotation(GETA_NAMESPACE, FIDEDh, fided);
@@ -655,19 +673,19 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 					if (teaTokens != null) {
 						SSpan teaSpan = graph.createSpan(teaTokens);
 						// Map TEA-level annotations to TEA span
-						annotateSpan(t.getAnnotations(), teaSpan);
+						annotateSpan(t.getAnnotations(), teaSpan, GETA_NAMESPACE_TEA);
 						GeTaM m = t.getM();
 						if (m != null) {
 							Boolean mNe = m.getNe();
 							if (mNe != null) {
-								teaSpan.createAnnotation(GETA_NAMESPACE, ne, mNe);
+								teaSpan.createAnnotation(GETA_NAMESPACE_TEA, ne, mNe);
 							}
 							List<GeTaLT> lts = m.getLt();
 							if (lts != null) {
 								for (GeTaLT lt : lts) {
-									teaSpan.createAnnotation(GETA_NAMESPACE, NT, lt.getNt());
+									teaSpan.createAnnotation(GETA_NAMESPACE_TEA, NT, lt.getNt());
 									List<GeTaAL> als = lt.getAl();
-									annotateSpanWithALs(als, teaSpan);
+									annotateSpanWithALs(als, teaSpan, GETA_NAMESPACE_TEA);
 								}
 							}
 						}
@@ -676,7 +694,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 						 * a Dillmann URL.
 						 */
 						// R annotations contain URLs to the Beta-Masaheft lexicon
-						SAnnotation lexAnnotation = teaSpan.getAnnotation(GETA_NAMESPACE, lex); 
+						SAnnotation lexAnnotation = teaSpan.getAnnotation(GETA_NAMESPACE_TEA, lex); 
 						if (lexAnnotation != null) {
 							String rawValue = lexAnnotation.getValue_STEXT();
 							String[] splitLemmaURL = rawValue.split("\\s+");
@@ -724,7 +742,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			if (mapDEA) {
 				for (GeTaDEA d : dea) {
 					SSpan deaSpan = graph.createSpan(sidTokensMap.get(d.getId()));
-					annotateSpan(d.getAnnotations(), deaSpan);
+					annotateSpan(d.getAnnotations(), deaSpan, GETA_NAMESPACE_DEA);
 				}
 			}
 
@@ -754,9 +772,9 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			if (mapNEA) {
 				for (GeTaNEA ne : nea) {
 					SSpan neaSpan = graph.createSpan(neTokensMap.get(ne.getId()));
-					annotateSpan(ne.getAnnotations(), neaSpan);
+					annotateSpan(ne.getAnnotations(), neaSpan, GETA_NAMESPACE_NEA);
 					// R annotations contain URLs to the Beta-Masaheft lexicon
-					SAnnotation rAnnotation = neaSpan.getAnnotation(GETA_NAMESPACE, R); 
+					SAnnotation rAnnotation = neaSpan.getAnnotation(GETA_NAMESPACE_NEA, R); 
 					if (rAnnotation != null) {
 						String rawValue = rAnnotation.getValue_STEXT();
 						boolean isURL = true;
@@ -774,7 +792,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 					List<GeTaAL> neFeat = ne.getFeat();
 					if (neFeat != null) {
 						for (GeTaAL al : neFeat) {
-							annotateSpan(al.getAnnotations(), neaSpan);
+							annotateSpan(al.getAnnotations(), neaSpan, GETA_NAMESPACE_NEA);
 						}
 					}
 				}
@@ -793,10 +811,10 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	 * @param als
 	 * @param teaSpan
 	 */
-	private void annotateSpanWithALs(List<GeTaAL> als, SSpan teaSpan) {
+	private void annotateSpanWithALs(List<GeTaAL> als, SSpan teaSpan, String namespace) {
 		if (als != null) {
 			for (GeTaAL al : als) {
-				annotateSpan(al.getAnnotations(), teaSpan);
+				annotateSpan(al.getAnnotations(), teaSpan, namespace);
 			}
 		}
 	}
@@ -806,8 +824,9 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	 *
 	 * @param entrySet
 	 * @param span
+	 * @param namespace 
 	 */
-	private void annotateSpan(Map<String, ?> annotationMap, SSpan span) {
+	private void annotateSpan(Map<String, ?> annotationMap, SSpan span, String namespace) {
 		for (Entry<String, ?> a : annotationMap.entrySet()) {
 			String key = a.getKey();
 			if (key == null || key.isEmpty()) {
@@ -825,7 +844,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 					}
 				}
 			}
-			span.createAnnotation(GETA_NAMESPACE, key, value);
+			span.createAnnotation(namespace, key, value);
 		}
 	}
 
