@@ -330,6 +330,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 
 	private static final String GETA_NAMESPACE = "GeTa";
 	private static final String GETA_META_NAMESPACE = GETA_NAMESPACE + "_META";
+	// "lex" N:V attribute
+	private static final String lex = "lex";
 
 	/*
 	 * @copydoc @see org.corpus_tools.pepper.impl.PepperMapperImpl#mapSCorpus()
@@ -520,6 +522,21 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 				for (Entry<String, Object> meta : metaea.getAnnotations().entrySet()) {
 					getDocument().createMetaAnnotation(GETA_NAMESPACE + "_META", meta.getKey(), meta.getValue());
 				}
+				// ID contains a URL
+				if (metaea.getId() != null) {
+					String rawValue = metaea.getId();
+					boolean isURL = true;
+					try {
+						new URL(rawValue);
+					}
+					catch (Exception e) {
+						// R value is not a valid URL, so leave as is.
+						getDocument().createMetaAnnotation(GETA_NAMESPACE + "_META", ID, rawValue);
+					}
+					if (isURL) {
+						getDocument().createMetaAnnotation(GETA_NAMESPACE + "_META", ID, "<a href =\"" + rawValue + "\">" + rawValue + "</a>");
+					}
+				}
 				List<String> parts = metaea.getParts();
 				if (parts != null) {
 					StringBuilder sbParts = new StringBuilder();
@@ -652,6 +669,37 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 									List<GeTaAL> als = lt.getAl();
 									annotateSpanWithALs(als, teaSpan);
 								}
+							}
+						}
+						/* 
+						 * If the attribute name is "lex", it is likely to contain
+						 * a Dillmann URL.
+						 */
+						// R annotations contain URLs to the Beta-Masaheft lexicon
+						SAnnotation lexAnnotation = teaSpan.getAnnotation(GETA_NAMESPACE, lex); 
+						if (lexAnnotation != null) {
+							String rawValue = lexAnnotation.getValue_STEXT();
+							String[] splitLemmaURL = rawValue.split("\\s+");
+							if (splitLemmaURL.length == 2) {
+								/* 
+								 * Possibly contains Lemma and URL, e.g.
+								 * "መኰንን    http://betamasaheft.eu/..."
+								 */
+								boolean isURL = true;
+								String potentialURL = splitLemmaURL[1];
+								try {
+									new URL(potentialURL);
+								}
+								catch (Exception e) {
+									// R value is not a valid URL, so leave as is.
+									isURL = false;
+								}
+								if (isURL) {
+									lexAnnotation.setValue("<a href=\"" + potentialURL + "\">" + splitLemmaURL[0] + "</a>");
+								}
+							}
+							else {
+								// Leave as is
 							}
 						}
 					}
