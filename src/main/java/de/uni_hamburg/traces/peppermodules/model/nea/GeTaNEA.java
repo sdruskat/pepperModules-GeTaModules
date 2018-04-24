@@ -43,6 +43,7 @@ public class GeTaNEA {
 	private final Map<String, String> annotations = new HashMap<>();
 	private List<GeTaRef> ref;
 	private List<GeTaAL> feat;
+	private String r;
 
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
@@ -54,6 +55,7 @@ public class GeTaNEA {
 		this.id = id;
 		this.ref = ref;
 		this.feat = feat;
+		this.r = r;
 		annotations.put(GeTaMapper.T, t);
 		annotations.put(GeTaMapper.R, r);
 		// Remove null values from map
@@ -86,6 +88,13 @@ public class GeTaNEA {
 	 */
 	public final List<GeTaAL> getFeat() {
 		return feat;
+	}
+
+	/**
+	 * @return the r
+	 */
+	public final String getR() {
+		return r;
 	}
 
 }

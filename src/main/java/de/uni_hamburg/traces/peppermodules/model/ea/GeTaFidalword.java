@@ -32,6 +32,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 
 import de.uni_hamburg.traces.peppermodules.GeTaMapper;
+import de.uni_hamburg.traces.peppermodules.GeTaUtil;
 
 /**
  * TODO Description
@@ -79,8 +80,14 @@ public class GeTaFidalword {
 		 * visualization work.
 		 */
 		this.tr = tr;
+		annotations.put(GeTaMapper.Id, id);
 		annotations.put(GeTaMapper.FID, fid);
 		annotations.put(GeTaMapper.FIDED, fided);
+		annotations.put(GeTaMapper.TR, tr);
+		annotations.put(GeTaMapper.Sid, GeTaUtil.join(sid));
+		annotations.put(GeTaMapper.Qid, GeTaUtil.join(qid));
+		annotations.put(GeTaMapper.Tid, GeTaUtil.join(tid));
+		annotations.put(GeTaMapper.NE, ne);
 		annotations.put(GeTaMapper.Comm, comm);
 		// Remove null values from map
 		Iterables.removeIf(annotations.keySet(), Predicates.isNull());

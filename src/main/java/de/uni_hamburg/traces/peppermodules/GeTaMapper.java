@@ -18,7 +18,7 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules;
 
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -26,16 +26,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
 import org.corpus_tools.pepper.common.DOCUMENT_STATUS;
 import org.corpus_tools.pepper.impl.PepperMapperImpl;
 import org.corpus_tools.pepper.modules.PepperMapper;
-import org.corpus_tools.pepper.modules.PepperModuleProperties;
 import org.corpus_tools.pepper.modules.exceptions.PepperModuleException;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocumentGraph;
@@ -44,8 +40,6 @@ import org.corpus_tools.salt.common.STextualDS;
 import org.corpus_tools.salt.common.SToken;
 import org.corpus_tools.salt.core.SAnnotation;
 import org.corpus_tools.salt.core.SLayer;
-import org.corpus_tools.salt.exceptions.SaltException;
-import org.corpus_tools.salt.exceptions.SaltInsertionException;
 import org.eclipse.emf.common.util.URI;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
@@ -66,6 +60,7 @@ import de.uni_hamburg.traces.peppermodules.model.ea.GeTaEA;
 import de.uni_hamburg.traces.peppermodules.model.ea.GeTaEd;
 import de.uni_hamburg.traces.peppermodules.model.ea.GeTaFC;
 import de.uni_hamburg.traces.peppermodules.model.nea.GeTaNEA;
+import de.uni_hamburg.traces.peppermodules.model.nea.GeTaRef;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaAL;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaLT;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaM;
@@ -245,7 +240,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 
 	// █ Named entity annotations > ref █
 	/** Word id in a RefWord object */
-	public static final String WID = "WID";
+	public static final String WId = "WId";
 	/**
 	 * List of Ids of tokens in the graphical unit with a WID occurring in the
 	 * NE
@@ -341,6 +336,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	private static final String unvocalized = "unvocalized";
 	private static final String GEEZ = "Ge'ez";
 	private static final String SOUTH_ARABIAN = "SouthArabian";
+	// Token-based Named Entity annotation
+	private static final String NET = "NET";
 
 	/*
 	 * @copydoc @see org.corpus_tools.pepper.impl.PepperMapperImpl#mapSCorpus()
@@ -488,34 +485,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 				return DOCUMENT_STATUS.FAILED;
 			}
 
-			// Construct indices of objects
-
-			// for (GeTaFidalword w : ea.getFidalwords()) {
-			// fidalwordMap.put(w.getId(), w);
-			// }
-			// // FIXME: teaMAP not needed in this direction of mapping?
-			// if (mapTEA) {
-			// for (GeTaTEA t : tea) {
-			// teaMap.put(t.getId(), t);
-			// }
-			// }
-			// if (mapDEA) {
-			// for (GeTaDEA d : dea) {
-			// deaMap.put(d.getId(), d);
-			// }
-			// }
-			// if (mapNEA) {
-			// for (GeTaNEA n : nea) {
-			// neaMap.put(n.getId(), n);
-			// }
-			// }
-			// TODO: Implement later
-			// if (mapQEA) {
-			// for (GeTaQEAAnn qEAann : qEAanns) {
-			// qEAannMap.put(qEAann.getId(), qEAann);
-			// }
-			// }
-
 			/*
 			 * ############################ Map the JSON objects to Salt
 			 * ############################
@@ -560,19 +529,18 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 							strParts.substring(0, strParts.length() - 1));
 				}
 			}
-			// SSpan objectBasicAnnoSpan = null, tRSpan = null, fIDEDSpan =
-			// null;
-			// Map<String, List<SToken>> tid2TokMap = new HashMap<>();
-			// // GeTaWord = entity in FIDALWORDS array
-			// Map<String, List<GeTaFidalword>> sid2WordsMap = new HashMap<>();
 
-			// A map mapping GeTa Token Ids to lists of STokens
+			// A map mapping fidalword ids to spans spanning that fidalword
+			Map<String, SSpan> fidalwordSpanIndex = new HashMap<>();
+			// A map mapping GeTa Token Ids from Graphical Units (words) to lists of STokens
 			Map<String, ArrayList<SToken>> tidTokensMap = new HashMap<>();
+			// A map mapping Graphical Unit (word) ids to lists of tokens
+			Map<String, List<SToken>> fidalwordIdTokensMap = new HashMap<>();
 			// A map mapping GeTa Division Ids to lists of STokens
 			Map<String, ArrayList<SToken>> sidTokensMap = new HashMap<>();
-			// A map mapping GeTa Division Ids to lists of STokens
-			Map<String, ArrayList<SToken>> neTokensMap = new HashMap<>();
-
+			// A map mapping GeTa word-based Named Entity Ids to lists of STokens
+			Map<String, ArrayList<SToken>> wordNETokensMap = new HashMap<>();
+			
 			// Iterate through all GeTaWords and map accordingly
 			for (GeTaFidalword fidalword : ea.getFidalwords()) {
 				List<SToken> fidalwordTokens = new ArrayList<>();
@@ -592,6 +560,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 						String tid = ll.getTid();
 						if ((llTidTokenList = tidTokensMap.get(tid)) != null) {
 							llTidTokenList.add(tok);
+							tidTokensMap.put(ll.getTid(), llTidTokenList);
 						}
 						else {
 							tidTokensMap.put(ll.getTid(), new ArrayList<>(Arrays.asList(new SToken[] { tok })));
@@ -610,9 +579,9 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 						// Add the token to the map from NE Ids to STokens
 						String neId = fidalword.getNe();
 						if (neId != null && !neId.isEmpty()) {
-							List<SToken> neTokens = neTokensMap.get(neId);
+							List<SToken> neTokens = wordNETokensMap.get(neId);
 							if (neTokens == null) {
-								neTokensMap.put(neId, new ArrayList<>(Arrays.asList(new SToken[] { tok })));
+								wordNETokensMap.put(neId, new ArrayList<>(Arrays.asList(new SToken[] { tok })));
 							}
 							else {
 								neTokens.add(tok);
@@ -650,6 +619,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 				// Add Fidalword-level annotations to Fidalword
 				SSpan fidalwordSpan = graph.createSpan(fidalwordTokens);
 				annotateSpan(fidalword.getAnnotations(), fidalwordSpan, GETA_NAMESPACE);
+				fidalwordSpanIndex.put(fidalword.getId(), fidalwordSpan);
 				/* 
 				 * Need an extra span just for TR annotations to make
 				 * multiple segmentation visualization work
@@ -669,7 +639,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			 */
 			if (mapTEA) {
 				for (GeTaTEA t : tea) {
-					ArrayList<SToken> teaTokens = tidTokensMap.get(t.getId());
+					String id = t.getId();
+					ArrayList<SToken> teaTokens = tidTokensMap.get(id);
 					if (teaTokens != null) {
 						SSpan teaSpan = graph.createSpan(teaTokens);
 						// Map TEA-level annotations to TEA span
@@ -724,16 +695,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 
 				}
 			}
-			// OLD BELOW
-			// for (Entry<String, List<SToken>> tracesToken :
-			// tidTokensMap.entrySet()) {
-			// SSpan tracesTokenSpan = graph.createSpan(tracesToken.getValue());
-			// annoLayer.addNode(tracesTokenSpan);
-			// if (mapTEA) {
-			// annotateAnnoSpanWithTEAAnnos(tracesTokenSpan,
-			// tracesToken.getKey());
-			// }
-			// }
 
 			/*
 			 * Connect the Fidel words with their division annotations. The
@@ -746,38 +707,37 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 				}
 			}
 
-			// // OLD BELOW
-			// for (Entry<String, List<GeTaFidalword>> sidAndTracesWord :
-			// sid2WordsMap.entrySet()) {
-			// Set<SToken> sidTokens = new HashSet<>();
-			// // Compile list of tokens governed by words in this sid
-			// for (GeTaFidalword word : sidAndTracesWord.getValue()) {
-			// for (String wordTid : word.getTid()) {
-			// for (SToken wordToken : tid2TokMap.get(wordTid)) {
-			// sidTokens.add(wordToken);
-			// }
-			// }
-			// }
-			// SSpan sidSpan = graph.createSpan(new
-			// ArrayList<SToken>(sidTokens));
-			// annoLayer.addNode(sidSpan);
-			// if (mapDEA) {
-			// annotateAnnoSpanWithDEAAnnos(sidSpan, sidAndTracesWord.getKey());
-			// }
-			// }
 
 			/*
 			 * Connect Fidal words with named entities
 			 */
 			if (mapNEA) {
 				for (GeTaNEA ne : nea) {
-					SSpan neaSpan = graph.createSpan(neTokensMap.get(ne.getId()));
-					annotateSpan(ne.getAnnotations(), neaSpan, GETA_NAMESPACE_NEA);
-					// R annotations contain URLs to the Beta-Masaheft lexicon
-					SAnnotation rAnnotation = neaSpan.getAnnotation(GETA_NAMESPACE_NEA, R); 
-					if (rAnnotation != null) {
-						String rawValue = rAnnotation.getValue_STEXT();
-						boolean isURL = true;
+					// Build spans to receive annotations
+					List<SSpan> refTokenSpans = new ArrayList<>();
+					List<SSpan> refWordSpans = new ArrayList<>();
+					for (GeTaRef neRef : ne.getRef()) {
+						/* 
+						 * Create spans for Named Entity only over those
+						 * tokens that are explicitly linked in the NE
+						 */
+						List<String> tokenIds = neRef.getTid();
+						List<SToken> tokenSTokenList = new ArrayList<>();
+						for (String tid : tokenIds) {
+							tokenSTokenList.addAll(tidTokensMap.get(tid));
+						}
+						SSpan tokenNESpan = graph.createSpan(tokenSTokenList);
+						refTokenSpans.add(tokenNESpan);
+						// Add the span for the respective fidalword to a list
+						SSpan refWordSpan = fidalwordSpanIndex.get(neRef.getWid());
+						if (refWordSpan != null) {
+							refWordSpans.add(refWordSpan);
+						}
+					}
+					// Annotate
+					String rawValue = ne.getR();
+					boolean isURL = true;
+					if (rawValue != null) {
 						try {
 							new URL(rawValue);
 						}
@@ -785,14 +745,32 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 							// R value is not a valid URL, so leave as is.
 							isURL = false;
 						}
-						if (isURL) {
-							rAnnotation.setValue("<a href=\"" + rawValue + "\">" + rawValue + "</a>");
+					}
+					else {
+						isURL = false;
+					}
+					for (SSpan span : refTokenSpans) {
+						annotateSpan(ne.getAnnotations(), span, GETA_NAMESPACE_NEA);
+						// R annotations contain URLs to the Beta-Masaheft
+						// lexicon
+						SAnnotation rAnnotation = span.getAnnotation(GETA_NAMESPACE_NEA, R);
+						if (rAnnotation != null) {
+							if (isURL) {
+								rAnnotation.setValue("<a href=\"" + rawValue + "\">" + rawValue + "</a>");
+							}
+						}
+						List<GeTaAL> neFeat = ne.getFeat();
+						if (neFeat != null) {
+							for (GeTaAL al : neFeat) {
+								annotateSpan(al.getAnnotations(), span, GETA_NAMESPACE_NEA);
+							}
 						}
 					}
-					List<GeTaAL> neFeat = ne.getFeat();
-					if (neFeat != null) {
-						for (GeTaAL al : neFeat) {
-							annotateSpan(al.getAnnotations(), neaSpan, GETA_NAMESPACE_NEA);
+					if (rawValue != null && !rawValue.isEmpty()) {
+						for (SSpan span : refWordSpans) {
+							// Annotate the word span with NET annotation containing
+							// raw R value
+							span.createAnnotation(GETA_NAMESPACE_NEA, NET, rawValue);
 						}
 					}
 				}
@@ -876,86 +854,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 		}
 		return true;
 	}
-
-	/**
-	 * TODO: Description
-	 *
-	 * @param sidSpan
-	 * @param sid
-	 */
-	private void annotateAnnoSpanWithDEAAnnos(SSpan sidSpan, String sid) {
-		GeTaDEA dea = deaMap.get(sid);
-		if (dea == null) {
-			logger.info("Could not find annotations for " + Sid + " " + sid + " near " + jsonParser.getCurrentLocation()
-					+ "!");
-		}
-		else {
-			for (Entry<String, String> entry : dea.getAnnotations().entrySet()) {
-				sidSpan.createAnnotation(GETA_NAMESPACE, entry.getKey(), entry.getValue());
-			}
-		}
-	}
-
-	// /**
-	// * Maps the annotations from the GeTa .ann annotations file to the
-	// * {@link SSpan}s that are to be annotated.
-	// *
-	// * @param annoSpan
-	// * @param tid
-	// */
-	// private void annotateAnnoSpanWithTEAAnnos(SSpan annoSpan, String tid) {
-	// GeTaTEA tea = teaMap.get(tid);
-	// if (tea == null) {
-	// logger.info("Could not find annotations for " + Tid + " " + tid + " near
-	// " + jsonParser.getCurrentLocation() + "!");
-	// }
-	// else {
-	// annotateSpan(tea.getAnnotations(), annoSpan);
-	// if (tea.getM() != null) {
-	// for (GeTaLT lt : tea.getM().getLt()) {
-	// annoSpan.createAnnotation(GETA_NAMESPACE, NT, lt.getNt());
-	// if (lt.getAl() != null) {
-	// for (GeTaAL al : lt.getAl()) {
-	// for (Entry<String, String> a : al.getAnnotations().entrySet()) {
-	// if (a.getKey() != null && !a.getKey().isEmpty()) {
-	// annoSpan.createAnnotation(GETA_NAMESPACE, a.getKey(), a.getValue());
-	// }
-	//// if (nv[1] != null && !nv[1].isEmpty()) {
-	//// try {
-	//// /*
-	//// * Special case: split up "lex" annotations which contain
-	//// * Tid and actual value separated by a double dash "--".
-	//// */
-	//// if (nv[0].equals("lex")) {
-	//// annoSpan.createAnnotation(GETA_NAMESPACE, "lem", nv[1].split("--")[1]);
-	//// }
-	//// else {
-	//// /*
-	//// * Create the annotation, and replace whitespaces, which
-	//// * are illegal as annotation keys, with dashes.
-	//// */
-	//// annoSpan.createAnnotation(TRACES, nv[0].replaceAll(" ", "-"), nv[1]);
-	//// }
-	//// }
-	//// catch (SaltInsertionException e) {
-	//// PepperModuleException ex = new PepperModuleException("Duplicate
-	// annotation name in " + getDocument().getName() + "!\n" + "Current
-	// annotation: " + TRACES + "::" + nv[0] + "=" + nv[1] + "\n" + "Existing
-	// annotation: " + annoSpan.getAnnotation(TRACES, nv[0]) + "\n" + "Token ID:
-	// " + tid, e);
-	//// logger.error("Conversion error: ", ex);
-	//// throw ex;
-	//// }
-	//// }
-	//// else {
-	//// logger.trace("Found an empty annotation (Tid: " + tid + "): \"" + nv[0]
-	// + "\"! Ignoring it.");
-	//// }
-	// }
-	// }}
-	// }}
-	// }
-	// }
 
 	/**
 	 * Creates an {@link SLayer} with the given name and adds it to the
