@@ -506,16 +506,12 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 				// ID contains a URL
 				if (metaea.getId() != null) {
 					String rawValue = metaea.getId();
-					boolean isURL = true;
-					try {
-						new URL(rawValue);
-					}
-					catch (Exception e) {
-						// R value is not a valid URL, so leave as is.
-						getDocument().createMetaAnnotation(GETA_NAMESPACE + "_META", ID, rawValue);
-					}
+					boolean isURL = GeTaUtil.testURL(rawValue);
 					if (isURL) {
 						getDocument().createMetaAnnotation(GETA_NAMESPACE + "_META", ID, "<a href =\"" + rawValue + "\">" + rawValue + "</a>");
+					}
+					else {
+						getDocument().createMetaAnnotation(GETA_NAMESPACE + "_META", ID, rawValue);
 					}
 				}
 				List<String> parts = metaea.getParts();
@@ -674,15 +670,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 								 * Possibly contains Lemma and URL, e.g.
 								 * "መኰንን    http://betamasaheft.eu/..."
 								 */
-								boolean isURL = true;
 								String potentialURL = splitLemmaURL[1];
-								try {
-									new URL(potentialURL);
-								}
-								catch (Exception e) {
-									// R value is not a valid URL, so leave as is.
-									isURL = false;
-								}
+								boolean isURL = GeTaUtil.testURL(potentialURL);
 								if (isURL) {
 									lexAnnotation.setValue("<a href=\"" + potentialURL + "\">" + splitLemmaURL[0] + "</a>");
 								}
@@ -735,20 +724,9 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 						}
 					}
 					// Annotate
+					// Test R value for URL
 					String rawValue = ne.getR();
-					boolean isURL = true;
-					if (rawValue != null) {
-						try {
-							new URL(rawValue);
-						}
-						catch (Exception e) {
-							// R value is not a valid URL, so leave as is.
-							isURL = false;
-						}
-					}
-					else {
-						isURL = false;
-					}
+					boolean isURL = GeTaUtil.testURL(rawValue);
 					for (SSpan span : refTokenSpans) {
 						annotateSpan(ne.getAnnotations(), span, GETA_NAMESPACE_NEA);
 						// R annotations contain URLs to the Beta-Masaheft

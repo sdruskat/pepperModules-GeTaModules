@@ -18,6 +18,7 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules;
 
+import java.net.URL;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +39,28 @@ public class GeTaUtil {
 	 */
 	public static String join(List<String> list) {
 		return StringUtils.join(list, ",");
+	}
+
+	/**
+	 * TODO: Description
+	 *
+	 * @param rawValue
+	 * @return
+	 */
+	public static boolean testURL(String rawValue) {
+		if (rawValue != null) {
+			try {
+				new URL(rawValue);
+			}
+			catch (Exception e) {
+				// R value is not a valid URL, so leave as is.
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+		return true;
 	}
 
 }
