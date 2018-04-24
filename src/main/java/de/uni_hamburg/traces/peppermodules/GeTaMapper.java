@@ -18,11 +18,10 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules;
 
-import java.io.BufferedReader; 
+import java.io.BufferedReader;  
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -65,7 +64,6 @@ import de.uni_hamburg.traces.peppermodules.model.tea.GeTaAL;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaLT;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaM;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaTEA;
-import de.uni_hamburg.traces.peppermodules.properties.GeTaImporterProperties;
 
 /**
  * The mapper class doing the actual mapping work.
@@ -76,7 +74,6 @@ import de.uni_hamburg.traces.peppermodules.properties.GeTaImporterProperties;
 public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 
 	private static final Logger logger = LoggerFactory.getLogger(GeTaMapper.class);
-	private GeTaImporterProperties properties = null;
 
 	/*
 	 * ██╗  ██╗███████╗██╗   ██╗███████╗
@@ -312,22 +309,24 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/*
 	 * OBJECTS
 	 */
-	private final Map<String, GeTaFidalword> fidalwordMap = new HashMap<>();
-	private final Map<String, GeTaTEA> teaMap = new HashMap<>();
-	private final Map<String, GeTaDEA> deaMap = new HashMap<>();
-	private final Map<String, GeTaNEA> neaMap = new HashMap<>();
-	private JsonParser jsonParser = null;
 	private boolean mapTEA = true;
 	private boolean mapDEA = true;
 	private boolean mapNEA = true;
-	private boolean mapQEA = true;
+	// To implement
+//	private boolean mapQEA = true;
 	private boolean mapMetaEA = true;
 
+	// NAMESPACES
 	private static final String GETA_NAMESPACE = "GeTa";
 	private static final String GETA_META_NAMESPACE = GETA_NAMESPACE + "_META";
 	private static final String GETA_NAMESPACE_TEA = GETA_NAMESPACE + "_TEA";
 	private static final String GETA_NAMESPACE_DEA = GETA_NAMESPACE + "_DEA";
 	private static final String GETA_NAMESPACE_NEA = GETA_NAMESPACE + "_NEA";
+	private static final String GETA_NAMESPACE_LT_ALS = GETA_META_NAMESPACE + "_LT_ALS";
+	private static final String GETA_NAMESPACE_TEA_LT_ALS = GETA_NAMESPACE_TEA + "_LT_ALS";
+	private static final String GETA_NAMESPACE_NEA_FEAT_ALS = GETA_NAMESPACE_NEA + "_FEAT_ALS";
+	// To implement
+//	private static final String GETA_NAMESPACE_QEA = GETA_NAMESPACE + "_QEA";
 	
 	// Special annotation values
 	// "lex" N:V attribute
@@ -338,6 +337,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	private static final String SOUTH_ARABIAN = "SouthArabian";
 	// Token-based Named Entity annotation
 	private static final String NET = "NET";
+
 
 	/*
 	 * @copydoc @see org.corpus_tools.pepper.impl.PepperMapperImpl#mapSCorpus()
@@ -352,26 +352,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	 */
 	@Override
 	public DOCUMENT_STATUS mapSDocument() {
-		if (getProperties() instanceof GeTaImporterProperties) {
-			this.properties = (GeTaImporterProperties) getProperties();
-		}
-		boolean mapMetaToAnnos = properties.mapMetadataToAnnotations();
-		// Set<SToken> sidTokens = new HashSet<>();
-		// // Compile list of tokens governed by words in this sid
-		// for (GeTaWord word : sidAndTracesWord.getValue()) {
-		// for (String wordTid : word.getTids()) {
-		// for (SToken wordToken : tid2TokMap.get(wordTid)) {
-		// sidTokens.add(wordToken);
-		// }
-		// }
-		// }
-		// SSpan sidSpan = graph.createSpan(new ArrayList<SToken>(sidTokens));
-		// annoLayer.addNode(sidSpan);
-		// if (mapDEA) {
-		// annotateAnnoSpanWithDEAAnnos(sidSpan, sidAndTracesWord.getKey());
-		// }
-		// }
-		// Create SDocumentGraph and set source text
 		SDocumentGraph graph = SaltFactory.createSDocumentGraph();
 		getDocument().setDocumentGraph(graph);
 		STextualDS text = SaltFactory.createSTextualDS();
@@ -605,7 +585,9 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 										ltSpan.createAnnotation(GETA_NAMESPACE, NT, lt.getNt());
 									}
 									if (als != null) {
-										annotateSpanWithALs(als, ltSpan, GETA_NAMESPACE);
+										for (GeTaAL al : als) {
+											annotateSpan(al.getAnnotations(), ltSpan, GETA_NAMESPACE_LT_ALS);
+										}
 									}
 								}
 							}
@@ -652,7 +634,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 								for (GeTaLT lt : lts) {
 									teaSpan.createAnnotation(GETA_NAMESPACE_TEA, NT, lt.getNt());
 									List<GeTaAL> als = lt.getAl();
-									annotateSpanWithALs(als, teaSpan, GETA_NAMESPACE_TEA);
+									annotateSpanWithALs(als, teaSpan, GETA_NAMESPACE_TEA_LT_ALS);
 								}
 							}
 						}
@@ -740,7 +722,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 						List<GeTaAL> neFeat = ne.getFeat();
 						if (neFeat != null) {
 							for (GeTaAL al : neFeat) {
-								annotateSpan(al.getAnnotations(), span, GETA_NAMESPACE_NEA);
+								annotateSpan(al.getAnnotations(), span, GETA_NAMESPACE_NEA_FEAT_ALS);
 							}
 						}
 					}
@@ -765,12 +747,12 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	 * TODO: Description
 	 *
 	 * @param als
-	 * @param teaSpan
+	 * @param span
 	 */
-	private void annotateSpanWithALs(List<GeTaAL> als, SSpan teaSpan, String namespace) {
+	private void annotateSpanWithALs(List<GeTaAL> als, SSpan span, String namespace) {
 		if (als != null) {
 			for (GeTaAL al : als) {
-				annotateSpan(al.getAnnotations(), teaSpan, namespace);
+				annotateSpan(al.getAnnotations(), span, namespace);
 			}
 		}
 	}

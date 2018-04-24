@@ -33,8 +33,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uni_hamburg.traces.peppermodules.properties.GeTaImporterProperties;
-
 /**
  * The main importer class which is responsible for setting up
  * metadata and creating the actual {@link PepperMapper}.
@@ -56,7 +54,6 @@ public class GeTaImporter extends PepperImporterImpl implements PepperImporter{
 		setDesc("An importer for the custom JSON-based format used by the GeTa research project (https://www.traces.uni-hamburg.de/).");
 		addSupportedFormat("traces-json", "1.0", null);
 		getDocumentEndings().add("json");
-		this.setProperties(new GeTaImporterProperties());
 	}
 	
 	/* 
