@@ -41,6 +41,7 @@ import org.corpus_tools.salt.core.SAnnotation;
 import org.corpus_tools.salt.core.SLayer;
 import org.eclipse.emf.common.util.URI;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -496,13 +497,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 				}
 				List<String> parts = metaea.getParts();
 				if (parts != null) {
-					StringBuilder sbParts = new StringBuilder();
-					for (String p : metaea.getParts()) {
-						sbParts.append(p).append(", ");
-					}
-					String strParts = sbParts.toString().trim();
-					getDocument().createMetaAnnotation(GETA_META_NAMESPACE, PARTS,
-							strParts.substring(0, strParts.length() - 1));
+					String partsString = StringUtil.join(metaea.getParts(), ",");
+					getDocument().createMetaAnnotation(GETA_META_NAMESPACE, PARTS, partsString);
 				}
 			}
 
@@ -643,7 +639,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 						 * a Dillmann URL.
 						 */
 						// R annotations contain URLs to the Beta-Masaheft lexicon
-						SAnnotation lexAnnotation = teaSpan.getAnnotation(GETA_NAMESPACE_TEA, lex); 
+						SAnnotation lexAnnotation = teaSpan.getAnnotation(GETA_NAMESPACE_TEA_LT_ALS, lex); 
 						if (lexAnnotation != null) {
 							String rawValue = lexAnnotation.getValue_STEXT();
 							String[] splitLemmaURL = rawValue.split("\\s+");
@@ -769,6 +765,9 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			String key = a.getKey();
 			if (key == null || key.isEmpty()) {
 				continue;
+			}
+			else {
+				key = key.replaceAll("\\s", "-");
 			}
 			Object value = a.getValue();
 			if (a.getValue() == null) {

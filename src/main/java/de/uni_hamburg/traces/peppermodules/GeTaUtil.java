@@ -51,6 +51,7 @@ public class GeTaUtil {
 		if (rawValue != null) {
 			try {
 				new URL(rawValue);
+				return true;
 			}
 			catch (Exception e) {
 				// R value is not a valid URL, so leave as is.
@@ -60,7 +61,6 @@ public class GeTaUtil {
 		else {
 			return false;
 		}
-		return true;
 	}
 
 }

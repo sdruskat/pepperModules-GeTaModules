@@ -83,7 +83,8 @@ public class GeTaFidalword {
 		annotations.put(GeTaMapper.Id, id);
 		annotations.put(GeTaMapper.FID, fid);
 		annotations.put(GeTaMapper.FIDED, fided);
-		annotations.put(GeTaMapper.TR, tr);
+		// Exclude TR otherwise it'll be duplicated in ANNIS grid
+//		annotations.put(GeTaMapper.TR, tr);
 		annotations.put(GeTaMapper.Sid, GeTaUtil.join(sid));
 		annotations.put(GeTaMapper.Qid, GeTaUtil.join(qid));
 		annotations.put(GeTaMapper.Tid, GeTaUtil.join(tid));
