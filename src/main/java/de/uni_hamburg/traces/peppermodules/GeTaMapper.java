@@ -39,6 +39,7 @@ import org.corpus_tools.salt.common.STextualDS;
 import org.corpus_tools.salt.common.SToken;
 import org.corpus_tools.salt.core.SAnnotation;
 import org.corpus_tools.salt.core.SLayer;
+import org.corpus_tools.salt.exceptions.SaltInsertionException;
 import org.eclipse.emf.common.util.URI;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.StringUtil;
@@ -726,7 +727,12 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 						for (SSpan span : refWordSpans) {
 							// Annotate the word span with NET annotation containing
 							// raw R value
-							span.createAnnotation(GETA_NAMESPACE_NEA, NET, rawValue);
+							try {
+								span.createAnnotation(GETA_NAMESPACE_NEA, NET, rawValue);
+							}
+							catch (SaltInsertionException e) {
+								logger.warn("Duplicate annotation caught, not adding: {}.", NET + ":" + rawValue	);
+							}
 						}
 					}
 				}
@@ -795,7 +801,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	private boolean checkFileExists(File fileToCheck, String filePath) {
 		String name = fileToCheck.getName();
 		if (!fileToCheck.exists()) {
-			throw new PepperModuleException("Could not find the " + name + " file at " + filePath + "!");
+			logger.error("No {} file found or file is empty!", name);
+			return false;
 		}
 		try (BufferedReader br = new BufferedReader(new FileReader(fileToCheck))) {
 			String rl = br.readLine();
