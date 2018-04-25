@@ -41,8 +41,6 @@ public class GeTaMetaEA {
 	private final Map<String, Object> annotations = new HashMap<>();
 	private String id;
 	private List<String> parts;
-	private Integer tr;
-	private Integer scr;
 	
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true)
@@ -59,8 +57,6 @@ public class GeTaMetaEA {
 			@JsonProperty(GeTaMapper.Comm) String comm) {
 		this.id = id;
 		this.parts = parts;
-		this.tr = tr;
-		this.scr = scr;
 		annotations.put(GeTaMapper.ANNOT, annot);
 		annotations.put(GeTaMapper.SOFT, soft);
 		annotations.put(GeTaMapper.NAME, name);

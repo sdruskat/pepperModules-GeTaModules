@@ -18,7 +18,7 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules;
 
-import java.io.BufferedReader;  
+import java.io.BufferedReader;   
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -47,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -285,8 +284,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/*
 	 * Metadata
 	 */
-	// GeTa prefix
-	private static final String TRACES = "GeTa";
 	// Metadata object for document
 	private GeTaMetaEA metaea;
 
@@ -306,7 +303,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	// Metadata file
 	private static final String MetaEA_FILE_SUFFIX = "MetaEA";
 	private static final String ANN_FILE_ENDING = "ann";
-	private static final String JSON_FILE_ENDING = "json";
+	private static final String JSON_FILE_ENDING = ".json";
 
 	/*
 	 * OBJECTS
@@ -324,6 +321,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	private static final String GETA_NAMESPACE_TEA = GETA_NAMESPACE + "_TEA";
 	private static final String GETA_NAMESPACE_DEA = GETA_NAMESPACE + "_DEA";
 	private static final String GETA_NAMESPACE_NEA = GETA_NAMESPACE + "_NEA";
+	// TODO Rename to include "Ed"
 	private static final String GETA_NAMESPACE_LT_ALS = GETA_META_NAMESPACE + "_LT_ALS";
 	private static final String GETA_NAMESPACE_TEA_LT_ALS = GETA_NAMESPACE_TEA + "_LT_ALS";
 	private static final String GETA_NAMESPACE_NEA_FEAT_ALS = GETA_NAMESPACE_NEA + "_FEAT_ALS";
@@ -360,23 +358,16 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 		text.setText("");
 		graph.addNode(text);
 
-		// Create layers
-		SLayer annoLayer = createLayer(graph, "anno");
-		// SLayer basicAnnoLayer = createLayer(graph, "basic-anno");
-		// SLayer edLayer = createLayer(graph, "ed-anno");
-		SLayer tRLayer = createLayer(graph, "TR");
-		SLayer fIDEDLayer = createLayer(graph, "FIDED");
-
 		// Create a parseable String from file
 		URI resource = getResourceURI();
 		String eaPath = resource.toFileString();
-		String teaPath = eaPath.split(JSON_FILE_SUFFIX + ".json")[0].concat(TEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
-		String deaPath = eaPath.split(JSON_FILE_SUFFIX + ".json")[0].concat(DEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
-		String neaPath = eaPath.split(JSON_FILE_SUFFIX + ".json")[0].concat(NEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
+		String teaPath = eaPath.split(JSON_FILE_SUFFIX + JSON_FILE_ENDING)[0].concat(TEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
+		String deaPath = eaPath.split(JSON_FILE_SUFFIX + JSON_FILE_ENDING)[0].concat(DEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
+		String neaPath = eaPath.split(JSON_FILE_SUFFIX + JSON_FILE_ENDING)[0].concat(NEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
 		// TODO: Implement later
 		// String qeaPath = eaPath.split(JSON_FILE_SUFFIX +
 		// ".json")[0].concat(QEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
-		String metaeaPath = eaPath.split(JSON_FILE_SUFFIX + ".json")[0]
+		String metaeaPath = eaPath.split(JSON_FILE_SUFFIX + JSON_FILE_ENDING)[0]
 				.concat(MetaEA_FILE_SUFFIX + "." + ANN_FILE_ENDING);
 		File eaFile = new File(eaPath);
 
@@ -507,8 +498,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			Map<String, SSpan> fidalwordSpanIndex = new HashMap<>();
 			// A map mapping GeTa Token Ids from Graphical Units (words) to lists of STokens
 			Map<String, ArrayList<SToken>> tidTokensMap = new HashMap<>();
-			// A map mapping Graphical Unit (word) ids to lists of tokens
-			Map<String, List<SToken>> fidalwordIdTokensMap = new HashMap<>();
 			// A map mapping GeTa Division Ids to lists of STokens
 			Map<String, ArrayList<SToken>> sidTokensMap = new HashMap<>();
 			// A map mapping GeTa word-based Named Entity Ids to lists of STokens
@@ -819,20 +808,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			logger.error("Error occurred reading the file {}.", name, e2);
 		}
 		return true;
-	}
-
-	/**
-	 * Creates an {@link SLayer} with the given name and adds it to the
-	 * {@link SDocumentGraph}.
-	 *
-	 * @param graph
-	 * @param string
-	 */
-	private SLayer createLayer(SDocumentGraph graph, String name) {
-		SLayer layer = SaltFactory.createSLayer();
-		layer.setName(name);
-		graph.addLayer(layer);
-		return layer;
 	}
 
 }
