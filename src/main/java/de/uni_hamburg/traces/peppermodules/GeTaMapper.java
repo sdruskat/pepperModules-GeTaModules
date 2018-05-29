@@ -330,12 +330,15 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	// Special annotation values
 	// "lex" N:V attribute
 	private static final String lex = "lex";
+	// HTMLified lex annotation
+	private static final String lexh = "lexh";
 	private static final String vocalized = "vocalized";
 	private static final String unvocalized = "unvocalized";
 	private static final String GEEZ = "Ge'ez";
 	private static final String SOUTH_ARABIAN = "SouthArabian";
 	// Token-based Named Entity annotation
 	private static final String NET = "NET";
+
 
 
 	/*
@@ -640,7 +643,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 								String potentialURL = splitLemmaURL[1];
 								boolean isURL = GeTaUtil.testURL(potentialURL);
 								if (isURL) {
-									lexAnnotation.setValue("<a href=\"" + potentialURL + "\">" + splitLemmaURL[0] + "</a>");
+									lexAnnotation.setValue(splitLemmaURL[0]);
+									teaSpan.createAnnotation(GETA_NAMESPACE_TEA_LT_ALS, lexh, "<a href=\"" + potentialURL + "\">" + splitLemmaURL[0] + "</a>");
 								}
 							}
 							else {
