@@ -69,6 +69,7 @@ public class GeTaMapperTest {
 		getFixture().mapSDocument();
 		assertNotNull(getFixture().getDocument().getDocumentGraph());
 		assertEquals(1, getFixture().getDocument().getDocumentGraph().getTextualDSs().size());
+		System.err.println(getFixture().getDocument().getDocumentGraph().getNodes());
 		assertFalse(getFixture().getDocument().getDocumentGraph().getSpans().isEmpty());
 		assertFalse(getFixture().getDocument().getDocumentGraph().getTokens().isEmpty());
 	}
@@ -79,9 +80,9 @@ public class GeTaMapperTest {
 		assertNotNull(getFixture().getDocument().getMetaAnnotation("GeTa::SCR"));
 		assertNotNull(getFixture().getDocument().getMetaAnnotation("GeTa::TR"));
 		assertEquals("SCR", getFixture().getDocument().getMetaAnnotation("GeTa::SCR").getName());
-		assertEquals(0, getFixture().getDocument().getMetaAnnotation("GeTa::SCR").getValue());
+		assertEquals("Ge'ez", getFixture().getDocument().getMetaAnnotation("GeTa::SCR").getValue());
 		assertEquals("TR", getFixture().getDocument().getMetaAnnotation("GeTa::TR").getName());
-		assertEquals(0, getFixture().getDocument().getMetaAnnotation("GeTa::TR").getValue());
+		assertEquals("vocalized", getFixture().getDocument().getMetaAnnotation("GeTa::TR").getValue());
 	}
 
 	/**

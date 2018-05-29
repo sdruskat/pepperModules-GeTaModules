@@ -1,89 +1,95 @@
-
-  [
-    {
-      "Id": "T0>Wf2e5da2f-322e-4eab-94df-19c2487220c3",
-      "TOKL": "ba",
-      "M": {
-        "ne": "false",
-        "LT": [
-          {
-            "NT": "Preposition",
-            "AL": [
-              {
-                "V": "L79528bf91b00402f9cb3505bd6ea3010--በ",
-                "N": "lex"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "Id": "T1>Wf2e5da2f-322e-4eab-94df-19c2487220c3",
-      "TOKL": "sǝma",
-      "M": {
-        "ne": "false",
-        "LT": [
-          {
-            "NT": "Common Noun",
-            "AL": [
-              {
-                "V": "Unmarked",
-                "N": "gender"
-              },
-              {
-                "N1": "number pattern",
-                "V1": "Singular"
-              },
-              {
-                "V": "Nominative",
-                "N": "case"
-              },
-              {
-                "V": "Construct state",
-                "N": "status"
-              },
-              {
-                "V": "L9ad0e25e4767494686ee0bb77e9571e5--ስም",
-                "N": "lex"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "Id": "T0>Wd5067cb3-4640-454a-893f-f1a44e71b26b",
-      "TOKL": "ʾab",
-      "M": {
-        "ne": "false",
-        "LT": [
-          {
-            "NT": "Common Noun",
-            "AL": [
-              {
-                "N3": "gender nature",
-                "V3": "Masculine"
-              },
-              {
-                "N1": "number pattern",
-                "V1": "Singular"
-              },
-              {
-                "V": "Nominative",
-                "N": "case"
-              },
-              {
-                "V": "Absolute state",
-                "N": "status"
-              },
-              {
-                "V": "Lf7319d416f3e4a5a90275d1c1bf9e1f6--አበው",
-                "N": "lex"
-              }
-            ]
-          }
-        ]
-      }
+[
+  {
+    "NEId": "",
+    "Id": "T0>Wf2e5da2f-322e-4eab-94df-19c2487220c3",
+    "TOKL": "ba",
+    "M": {
+      "ne": "false",
+      "LT": [
+        {
+          "NT": "Preposition",
+          "AL": [
+            {
+              "V": "Nominal state",
+              "N": "state"
+            },
+            {
+              "V": "በ    http://betamasaheft.eu/api/Dillmann/L79528bf91b00402f9cb3505bd6ea3010/teientry",
+              "N": "lex"
+            }
+          ]
+        }
+      ]
     }
-  ]
+  },
+  {
+    "NEId": "",
+    "Id": "T1>Wf2e5da2f-322e-4eab-94df-19c2487220c3",
+    "TOKL": "sǝma",
+    "M": {
+      "ne": "false",
+      "LT": [
+        {
+          "NT": "Common Noun",
+          "AL": [
+            {
+              "V": "Unmarked",
+              "N": "gender"
+            },
+            {
+              "N1": "number pattern",
+              "V1": "Singular"
+            },
+            {
+              "V": "Nominative",
+              "N": "case"
+            },
+            {
+              "V": "Construct state",
+              "N": "state"
+            },
+            {
+              "V": "ስም    http://betamasaheft.eu/api/Dillmann/L9ad0e25e4767494686ee0bb77e9571e5/teientry",
+              "N": "lex"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "NEId": "N88127824-ae50-4b6b-bc1b-d3e8a6ebc314",
+    "Id": "T0>Wd5067cb3-4640-454a-893f-f1a44e71b26b",
+    "TOKL": "ʾab",
+    "M": {
+      "ne": "true",
+      "LT": [
+        {
+          "NT": "Common Noun",
+          "AL": [
+            {
+              "V": "አበው    http://betamasaheft.eu/api/Dillmann/Lf7319d416f3e4a5a90275d1c1bf9e1f6/teientry",
+              "N": "lex"
+            },
+            {
+              "N3": "gender nature",
+              "V3": "Masculine"
+            },
+            {
+              "N1": "number pattern",
+              "V1": "Singular"
+            },
+            {
+              "V": "Nominative",
+              "N": "case"
+            },
+            {
+              "V": "Absolute state",
+              "N": "state"
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

@@ -1,17 +1,10 @@
 package de.uni_hamburg.traces.peppermodules;
 
-import de.uni_hamburg.traces.peppermodules.GeTaImporter;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import de.uni_hamburg.traces.peppermodules.GeTaImporter; 
 
 import org.corpus_tools.pepper.common.FormatDesc;
 import org.corpus_tools.pepper.testFramework.PepperImporterTest;
-import org.corpus_tools.salt.common.SCorpus;
-import org.corpus_tools.salt.common.SDocument;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 
 /**
  * This is a dummy implementation of a JUnit test for testing the {@link GeTaImporter} class. Feel free to adapt and enhance this test class for real tests to check the work of your importer. If you are not confirm with JUnit, please have

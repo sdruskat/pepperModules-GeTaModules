@@ -18,7 +18,7 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules;
 
-import java.io.BufferedReader;   
+import java.io.BufferedReader;    
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,7 +38,6 @@ import org.corpus_tools.salt.common.SSpan;
 import org.corpus_tools.salt.common.STextualDS;
 import org.corpus_tools.salt.common.SToken;
 import org.corpus_tools.salt.core.SAnnotation;
-import org.corpus_tools.salt.core.SLayer;
 import org.corpus_tools.salt.exceptions.SaltInsertionException;
 import org.eclipse.emf.common.util.URI;
 import org.jsoup.Jsoup;
