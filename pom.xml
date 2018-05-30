@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uni-hamburg.traces</groupId>
 	<artifactId>pepperModules-GeTaModules</artifactId>
-	<version>0.9.6-SNAPSHOT</version>
+	<version>0.9.6</version>
 	<packaging>bundle</packaging>
 	<name>GeTaModules</name>
 	<!-- Declares this project to be an extension of the project pepper-parentModule. -->
@@ -63,7 +63,7 @@
 		<connection>scm:git:git://github.com/sdruskat/pepperModules-GeTaModules.git</connection>
 		<developerConnection>scm:git:git@github.com:sdruskat/pepperModules-GeTaModules.git</developerConnection>
 		<url>https://github.com/sdruskat/pepperModules-GeTaModules</url>
-		<tag>HEAD</tag>
+		<tag>0.9.6</tag>
 	</scm>
 
 	<properties>
