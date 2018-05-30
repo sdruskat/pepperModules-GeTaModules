@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uni-hamburg.traces</groupId>
 	<artifactId>pepperModules-GeTaModules</artifactId>
-	<version>0.9.3-SNAPSHOT</version>
+	<version>0.9.2-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<name>GeTaModules</name>
 	<!-- Declares this project to be an extension of the project pepper-parentModule. -->
