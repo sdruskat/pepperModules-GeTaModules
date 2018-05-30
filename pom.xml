@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.uni-hamburg.traces</groupId>
 	<artifactId>pepperModules-GeTaModules</artifactId>
-	<version>0.9.2-SNAPSHOT</version>
+	<version>0.9.2</version>
 	<packaging>bundle</packaging>
 	<name>GeTaModules</name>
 	<!-- Declares this project to be an extension of the project pepper-parentModule. -->
@@ -64,7 +63,7 @@
 		<connection>scm:git:git://github.com/sdruskat/pepperModules-GeTaModules.git</connection>
 		<developerConnection>scm:git:git@github.com:sdruskat/pepperModules-GeTaModules.git</developerConnection>
 		<url>https://github.com/sdruskat/pepperModules-GeTaModules</url>
-		<tag>HEAD</tag>
+		<tag>0.9.2</tag>
 	</scm>
 
 	<properties>
