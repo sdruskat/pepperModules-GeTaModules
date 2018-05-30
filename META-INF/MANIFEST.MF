@@ -1,18 +1,20 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1527585260163
+Bnd-LastModified: 1527680798122
 Build-Jdk: 1.8.0_171
 Built-By: stephan
 Bundle-ClassPath: .,jackson-core-2.8.3.jar,jackson-databind-2.8.3.jar,ja
  ckson-annotations-2.8.3.jar,jsoup-1.9.2.jar
-Bundle-Description: Provides shared POM-data.
-Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-Description: Pepper modules for converting the TraCES custom JSON
+  format.
+Bundle-DocURL: sdruskat.net
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0
 Bundle-ManifestVersion: 2
 Bundle-Name: pepperModules-GeTaModules
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-SymbolicName: de.uni-hamburg.traces.pepperModules-GeTaModules;sin
  gleton:=true
-Bundle-Vendor: Universität Hamburg
-Bundle-Version: 0.9.0
+Bundle-Vendor: sdruskat.net
+Bundle-Version: 0.9.1.SNAPSHOT
 Created-By: Apache Maven Bundle Plugin
 Embed-Dependency: jackson-*;scope=compile|runtime,jsoup;scope=compile|ru
  ntime
@@ -145,7 +147,7 @@ Export-Package: com.fasterxml.jackson.annotation;version="2.8.3",com.fas
  ackson.core.util,com.fasterxml.jackson.databind,com.fasterxml.jackson.d
  atabind.cfg,com.fasterxml.jackson.databind.introspect,com.fasterxml.jac
  kson.databind.jsontype,com.fasterxml.jackson.databind.type",org.jsoup.j
- soup;version="0.9.0"
+ soup;version="0.9.1.SNAPSHOT"
 Import-Package: com.fasterxml.jackson.annotation;version="[2.8,3)",com.f
  asterxml.jackson.core;version="[2.8,3)",com.fasterxml.jackson.core.type
  ;version="[2.8,3)",com.fasterxml.jackson.databind;version="[2.8,3)",com
