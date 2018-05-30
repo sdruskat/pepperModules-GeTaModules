@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1527691722704
+Bnd-LastModified: 1527693806806
 Build-Jdk: 1.8.0_171
 Built-By: stephan
 Bundle-ClassPath: .,jackson-core-2.8.3.jar,jackson-databind-2.8.3.jar,ja
@@ -14,7 +14,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-SymbolicName: de.uni-hamburg.traces.pepperModules-GeTaModules;sin
  gleton:=true
 Bundle-Vendor: sdruskat.net
-Bundle-Version: 0.9.4
+Bundle-Version: 0.9.6.SNAPSHOT
 Created-By: Apache Maven Bundle Plugin
 Embed-Dependency: jackson-*;scope=compile|runtime,jsoup;scope=compile|ru
  ntime
@@ -147,7 +147,7 @@ Export-Package: com.fasterxml.jackson.annotation;version="2.8.3",com.fas
  ackson.core.util,com.fasterxml.jackson.databind,com.fasterxml.jackson.d
  atabind.cfg,com.fasterxml.jackson.databind.introspect,com.fasterxml.jac
  kson.databind.jsontype,com.fasterxml.jackson.databind.type",org.jsoup.j
- soup;version="0.9.4"
+ soup;version="0.9.6.SNAPSHOT"
 Import-Package: com.fasterxml.jackson.annotation;version="[2.8,3)",com.f
  asterxml.jackson.core;version="[2.8,3)",com.fasterxml.jackson.core.type
  ;version="[2.8,3)",com.fasterxml.jackson.databind;version="[2.8,3)",com

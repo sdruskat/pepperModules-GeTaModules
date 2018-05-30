@@ -1,11 +1,12 @@
-/*******************************************************************************
- * Copyright 2016 Universität Hamburg
+/**
+ * Copyright 2016ff. Stephan Druskat
+ * All exploitation rights belong exclusively to Universität Hamburg.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +16,7 @@
  *
  * Contributors:
  *     Stephan Druskat - initial API and implementation
- *******************************************************************************/
+ */
 package de.uni_hamburg.traces.peppermodules;
 
 import java.io.BufferedReader;    
