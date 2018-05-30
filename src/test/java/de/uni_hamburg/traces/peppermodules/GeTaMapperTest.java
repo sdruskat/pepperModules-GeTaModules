@@ -21,19 +21,16 @@ package de.uni_hamburg.traces.peppermodules;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.io.File;
 
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocument;
 import org.eclipse.emf.common.util.URI;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * TODO Description
+ * Unit tests for {@link GeTaMapper}.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
@@ -42,8 +39,6 @@ public class GeTaMapperTest {
 	
 	private GeTaMapper fixture = null;
 	
-	// FIXME FIX TESTS
-
 	/**
 	 * Set up the fixture.
 	 *
@@ -74,6 +69,10 @@ public class GeTaMapperTest {
 		assertFalse(getFixture().getDocument().getDocumentGraph().getTokens().isEmpty());
 	}
 	
+	/**
+	 * Test method for {@link de.uni_hamburg.traces.peppermodules.GeTaMapper#mapSDocument()},
+	 * testing if the meta data that is expected exists.
+	 */
 	@Test
 	public void testDocumentHasMetaAnnotations() {
 		getFixture().mapSDocument();
@@ -83,14 +82,6 @@ public class GeTaMapperTest {
 		assertEquals("Ge'ez", getFixture().getDocument().getMetaAnnotation("GeTa::SCR").getValue());
 		assertEquals("TR", getFixture().getDocument().getMetaAnnotation("GeTa::TR").getName());
 		assertEquals("vocalized", getFixture().getDocument().getMetaAnnotation("GeTa::TR").getValue());
-	}
-
-	/**
-	 * Test method for {@link de.uni_hamburg.traces.peppermodules.GeTaMapper#mapSCorpus()}.
-	 */
-	@Test @Ignore
-	public void testMapSCorpus() {
-		fail("Not yet implemented"); // TODO
 	}
 
 	/**

@@ -42,6 +42,17 @@ public class GeTaFC {
 	private List<GeTaLL> ll;
 	private GeTaEd ed;
 
+	/**
+	 * Constructor creating a JSON representation.
+	 * 
+	 * @param fidlet
+	 * @param fidleted
+	 * @param trfid
+	 * @param plb
+	 * @param ppb
+	 * @param ed
+	 * @param ll
+	 */
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public GeTaFC(@JsonProperty(GeTaMapper.FIDLET) String fidlet,

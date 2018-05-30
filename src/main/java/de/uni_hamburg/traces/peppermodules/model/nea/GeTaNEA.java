@@ -18,12 +18,11 @@
  *******************************************************************************/
 package de.uni_hamburg.traces.peppermodules.model.nea;
 
-import java.util.HashMap;
+import java.util.HashMap; 
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
@@ -45,8 +44,16 @@ public class GeTaNEA {
 	private List<GeTaAL> feat;
 	private String r;
 
+	/**
+	 * Constructor creating a JSON representation.
+	 * 
+	 * @param id
+	 * @param r
+	 * @param t
+	 * @param ref
+	 * @param feat
+	 */
 	@JsonCreator
-	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
 	public GeTaNEA(@JsonProperty(GeTaMapper.Id) String id,
 			@JsonProperty(GeTaMapper.R) String r,
 			@JsonProperty(GeTaMapper.T) String t,

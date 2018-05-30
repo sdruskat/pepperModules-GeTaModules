@@ -21,7 +21,6 @@ package de.uni_hamburg.traces.peppermodules.model.tea;
 import java.util.HashMap;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
@@ -42,10 +41,14 @@ public class GeTaTEA {
 	private GeTaM m;
 
 	/**
+	 * Constructor creating a JSON representation.
 	 * 
+	 * @param id
+	 * @param tokl
+	 * @param neid
+	 * @param m
 	 */
 	@JsonCreator
-	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
 	public GeTaTEA(@JsonProperty(GeTaMapper.Id) String id,
 			@JsonProperty(GeTaMapper.TOKL) String tokl,
 			@JsonProperty(GeTaMapper.NEId) String neid,

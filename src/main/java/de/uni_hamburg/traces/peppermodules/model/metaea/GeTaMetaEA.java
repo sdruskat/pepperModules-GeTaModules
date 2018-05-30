@@ -31,7 +31,8 @@ import com.google.common.collect.Iterables;
 import de.uni_hamburg.traces.peppermodules.GeTaMapper;
 
 /**
- * TODO Description
+ * An object representation of a GeTa *MetaEA.ann file, which contains
+ * metadata for a GeTa dataset.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
@@ -42,6 +43,21 @@ public class GeTaMetaEA {
 	private String id;
 	private List<String> parts;
 	
+	/**
+	 * Constructor creating a JSON representation.
+	 * 
+	 * @param id
+	 * @param annot
+	 * @param soft
+	 * @param name
+	 * @param lang
+	 * @param date
+	 * @param edition
+	 * @param parts
+	 * @param tr
+	 * @param scr
+	 * @param comm
+	 */
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public GeTaMetaEA(@JsonProperty(GeTaMapper.ID) String id,

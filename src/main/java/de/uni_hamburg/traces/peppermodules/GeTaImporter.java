@@ -65,15 +65,6 @@ public class GeTaImporter extends PepperImporterImpl implements PepperImporter{
 	}
 
 	/* 
-	 * @copydoc @see org.corpus_tools.pepper.impl.PepperImporterImpl#isImportable(org.eclipse.emf.common.util.URI)
-	 */
-	@Override
-	public Double isImportable(URI corpusPath) {
-		// TODO some code to analyze the given corpus-structure
-		return (null);
-	}
-	
-	/* 
 	 * @copydoc @see org.corpus_tools.pepper.impl.PepperImporterImpl#importCorpusStructureRec(org.eclipse.emf.common.util.URI, org.corpus_tools.salt.common.SCorpus)
 	 */
 	/**

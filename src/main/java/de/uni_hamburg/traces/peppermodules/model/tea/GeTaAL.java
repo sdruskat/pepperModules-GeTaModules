@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
@@ -39,8 +38,20 @@ public class GeTaAL {
 
 	private final Map<String, String> annotations = new HashMap<>();
 
+
+	/**
+	 * Constructor creating a JSON representation.
+	 * 
+	 * @param n1
+	 * @param v1
+	 * @param n2
+	 * @param v2
+	 * @param n3
+	 * @param v3
+	 * @param n
+	 * @param v
+	 */
 	@JsonCreator
-	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
 	public GeTaAL(@JsonProperty(GeTaMapper.N1) String n1, @JsonProperty(GeTaMapper.V1) String v1,
 			@JsonProperty(GeTaMapper.N2) String n2, @JsonProperty(GeTaMapper.V2) String v2,
 			@JsonProperty(GeTaMapper.N3) String n3, @JsonProperty(GeTaMapper.V3) String v3,

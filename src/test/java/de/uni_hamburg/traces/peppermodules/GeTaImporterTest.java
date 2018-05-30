@@ -24,7 +24,6 @@ public class GeTaImporterTest extends PepperImporterTest {
 		FormatDesc formatDef = new FormatDesc();
 		formatDef.setFormatName("traces-json");
 		formatDef.setFormatVersion("1.0");
-		this.supportedFormatsCheck.add(formatDef);
 	}
 
 }

@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -75,15 +74,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 
 	private static final Logger logger = LoggerFactory.getLogger(GeTaMapper.class);
 
-	/*
-	 * ██╗  ██╗███████╗██╗   ██╗███████╗
-	 * ██║ ██╔╝██╔════╝╚██╗ ██╔╝██╔════╝
-	 * █████╔╝ █████╗   ╚████╔╝ ███████╗
-	 * ██╔═██╗ ██╔══╝    ╚██╔╝  ╚════██║
-	 * ██║  ██╗███████╗   ██║   ███████║
-	 * ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚══════╝
-	 */
-	// ███ Graphical unit annotations ███
+	// ###### KEYS ########
+	
 	/** Transcription vocalisation */
 	public static final String TR = "TR";
 	/** Original script type */
@@ -91,7 +83,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/** Graphical unit words */
 	public static final String FIDALWORDS = "FIDALWORDS";
 
-	// █ FIDALWORD (= GeTaWord) annotations █
 	/** Graphical unit id */
 	public static final String ID = "ID";
 	/** Ge'ez word */
@@ -116,9 +107,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/** Array of fidal letter objects */
 	public static final String FC = "FC";
 
-	/*
-	 * █ FIDALWORD > FC █ Fidal letter annotations
-	 */
 	/** Fidal letter */
 	public static final String FIDLET = "FIDLET";
 	/** Fidal letter with editorial markers */
@@ -134,16 +122,12 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/** Array of transliteration letter objects */
 	public static final String LL = "LL";
 
-	/*
-	 * █ FIDALWORD > FC > LL █ Latin letter annotations
-	 */
 	/** Latin letter transliteration of fidal letter */
 	public static final String LAT = "LAT";
 	/** Token id for the latin letter */
 	// Duplicate key Tid is already accounted for above under FIDALWORD
 	// annotations
 
-	// ███ Token annotations (TEA) ███
 	/** Token Id */
 	public static final String Id = "Id";
 	/** Token label */
@@ -153,26 +137,16 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/** Morphological annotation object */
 	public static final String M = "M";
 
-	/*
-	 * █ Token annotations > M █ Morphological token annotations
-	 */
 	/** Whether the token can be part of a named entity */
 	public static final String ne = "ne";
 	/** Array of tag objects */
 	public static final String LT = "LT";
 
-	/*
-	 * █ Token annotations > M > LT █ Morphological token annotation tags
-	 */
 	/** Tag name */
 	public static final String NT = "NT";
 	/** Array of attribute objects */
 	public static final String AL = "AL";
 
-	/*
-	 * █ Token annotations > M > LT > AL █ Morphological token annotation tag
-	 * values
-	 */
 	/** Gender PATTERN for nominals and numbers */
 	public static final String N1 = "N1";
 	/** Value of the gender PATTERN */
@@ -190,9 +164,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/** Attribute value for all but the three above */
 	public static final String V = "V";
 
-	// ███ Division annotations ███
-	// Division Id
-	// Duplicate key Id is already accounted for above under token annotations
 	/** Id of the word starting the division */
 	public static final String WB = "WB";
 	/** Id of the word ending the division */
@@ -220,13 +191,11 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/** List of ids of children divisions */
 	public static final String DC = "DC";
 
-	// ███ Named entity annotations ███
-	// NE Id
-	// Duplicate key Id is already accounted for above under token annotations
 	/** NE id in Beta-Masaheft authority lists */
 	public static final String R = "R";
 	/** Type of NE */
 	public static final String T = "T";
+
 	/**
 	 * List of objects pointing to which tokens and graphical units belong to
 	 * this NE
@@ -235,7 +204,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	/** List of other NE features */
 	public static final String feat = "feat";
 
-	// █ Named entity annotations > ref █
 	/** Word id in a RefWord object */
 	public static final String WId = "WId";
 	/**
@@ -244,7 +212,6 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	 */
 	public static final String TID = "TID";
 
-	// ███ Metadata annotations ███
 	// Document Id in CLAVIS of Beta-masaheft server
 	// Duplicate key Id is already accounted for above under token annotations
 	/** Annotator name */
@@ -266,8 +233,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	// Comment
 	// Comm already included elsewhere
 
-	// ███ Quotation annotations ███try<String, List<GeTaWord>> sidAndTracesWord
-	// : sid2WordsMap.entrySet()) {
+	// TODO Quotation annotations
 	// Quotation id
 	// Duplicate key ID is already accounted for above under graphical unit
 	// annotations
@@ -297,8 +263,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	private static final String DEA_FILE_SUFFIX = "DEA";
 	// Named Entities file
 	private static final String NEA_FILE_SUFFIX = "NEA";
-	// Quotations file
-	private static final String QEA_FILE_SUFFIX = "QEA";
+	// TODO Quotations file
+	// private static final String QEA_FILE_SUFFIX = "QEA";
 	// Metadata file
 	private static final String MetaEA_FILE_SUFFIX = "MetaEA";
 	private static final String ANN_FILE_ENDING = "ann";
@@ -310,8 +276,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	private boolean mapTEA = true;
 	private boolean mapDEA = true;
 	private boolean mapNEA = true;
-	// To implement
-//	private boolean mapQEA = true;
+	// TODO To implement
+	// private boolean mapQEA = true;
 	private boolean mapMetaEA = true;
 
 	// NAMESPACES
@@ -324,8 +290,8 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	private static final String GETA_NAMESPACE_LT_ALS = GETA_META_NAMESPACE + "_LT_ALS";
 	private static final String GETA_NAMESPACE_TEA_LT_ALS = GETA_NAMESPACE_TEA + "_LT_ALS";
 	private static final String GETA_NAMESPACE_NEA_FEAT_ALS = GETA_NAMESPACE_NEA + "_FEAT_ALS";
-	// To implement
-//	private static final String GETA_NAMESPACE_QEA = GETA_NAMESPACE + "_QEA";
+	// TODO To implement
+	// private static final String GETA_NAMESPACE_QEA = GETA_NAMESPACE + "_QEA";
 	
 	// Special annotation values
 	// "lex" N:V attribute
@@ -386,7 +352,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 		File metaeaFile = new File(metaeaPath);
 		mapMetaEA = checkFileExists(metaeaFile, metaeaPath);
 
-		// TODO: Implement later
+		// TODO: Implement
 		// File qeaFile = new File(qeaPath);
 		// mapQEA = checkFileExists(qeaFile, qeaPath);
 		//
@@ -395,43 +361,17 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 		try {
 			ObjectMapper eaMapper = new ObjectMapper();
 			ObjectMapper teaMapper = new ObjectMapper();
-			teaMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME
-																							// Remove
-																							// once
-																							// all
-																							// is
-																							// in
 			ObjectMapper dEAMapper = new ObjectMapper();
-			teaMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME
-																							// Remove
-																							// once
-																							// all
-																							// is
-																							// in
 			ObjectMapper neaMapper = new ObjectMapper();
-			neaMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME
-																							// Remove
-																							// once
-																							// all
-																							// is
-																							// in
 			ObjectMapper metaeaMapper = new ObjectMapper();
-			metaeaMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // FIXME
-																								// Remove
-																								// once
-																								// all
-																								// is
-																								// in
-			// TODO: Implement later
+			// TODO: Implement
 			// ObjectMapper qeaMapper = new ObjectMapper();
-			// qeaMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-			// false); // FIXME Remove once all is in
 			GeTaEA ea;
 			List<GeTaTEA> tea = null;
 			List<GeTaDEA> dea = null;
 			List<GeTaNEA> nea = null;
 			metaea = null;
-			// TODO: Implement later
+			// TODO: Implement
 			// List<GeTaQEA> qea = null;
 			try {
 				// Map the contents of the main file.
@@ -449,7 +389,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 				if (mapMetaEA)
 					metaea = metaeaMapper.readValue(metaeaFile, new TypeReference<GeTaMetaEA>() {
 					});
-				// TODO: Implement later
+				// TODO: Implement
 				// if (mapQEA)
 				// qea = qeaMapper.readValue(qeaFile, new
 				// TypeReference<List<GeTaQEA>>() {
@@ -461,8 +401,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 			}
 
 			/*
-			 * ############################ Map the JSON objects to Salt
-			 * ############################
+			 * ### Map the JSON objects to Salt ###
 			 */
 			// Map document metadata
 			/*
@@ -481,7 +420,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 				// ID contains a URL
 				if (metaea.getId() != null) {
 					String rawValue = metaea.getId();
-					boolean isURL = GeTaUtil.testURL(rawValue);
+					boolean isURL = GeTaUtil.isValidJavaNetURL(rawValue);
 					if (isURL) {
 						getDocument().createMetaAnnotation(GETA_NAMESPACE + "_META", ID, "<a href =\"" + rawValue + "\">" + rawValue + "</a>");
 					}
@@ -641,7 +580,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 								 * "መኰንን    http://betamasaheft.eu/..."
 								 */
 								String potentialURL = splitLemmaURL[1];
-								boolean isURL = GeTaUtil.testURL(potentialURL);
+								boolean isURL = GeTaUtil.isValidJavaNetURL(potentialURL);
 								if (isURL) {
 									lexAnnotation.setValue(splitLemmaURL[0]);
 									teaSpan.createAnnotation(GETA_NAMESPACE_TEA_LT_ALS, lexh, "<a href=\"" + potentialURL + "\">" + splitLemmaURL[0] + "</a>");
@@ -697,7 +636,7 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 					// Annotate
 					// Test R value for URL
 					String rawValue = ne.getR();
-					boolean isURL = GeTaUtil.testURL(rawValue);
+					boolean isURL = GeTaUtil.isValidJavaNetURL(rawValue);
 					for (SSpan span : refTokenSpans) {
 						annotateSpan(ne.getAnnotations(), span, GETA_NAMESPACE_NEA);
 						// R annotations contain URLs to the Beta-Masaheft
@@ -738,10 +677,12 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	}
 
 	/**
-	 * TODO: Description
+	 * Calls {@link #annotateSpan(Map, SSpan, String)} on all
+	 * AL objects for a span.
 	 *
-	 * @param als
-	 * @param span
+	 * @param als The list of {@link GeTaAL} objects containing annotations for the span
+	 * @param span The span to be annotated
+	 * @param namespace The Salt annotation namespace to use for the annotations 
 	 */
 	private void annotateSpanWithALs(List<GeTaAL> als, SSpan span, String namespace) {
 		if (als != null) {
@@ -752,11 +693,18 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	}
 
 	/**
-	 * TODO: Description
+	 * Annotates a span with the passed annotation map.  
+	 * The map maps annotation keys to annotation values.  
+	 * This method performs checks on the annotation map,
+	 * i.e., whether the key/value is `null` or emtpy.
+	 * 
+	 * Only if both key and value of the respective entry
+	 * of the annotations map which is iterated is neither `null`
+	 * nor empty is the annotation created.
 	 *
-	 * @param entrySet
-	 * @param span
-	 * @param namespace 
+	 * @param annotationMap The key:value map of annotations to apply to the span
+	 * @param span The span to be annotated
+	 * @param namespace The Salt annotation namespace to be used for the annotations
 	 */
 	private void annotateSpan(Map<String, ?> annotationMap, SSpan span, String namespace) {
 		for (Entry<String, ?> a : annotationMap.entrySet()) {
@@ -784,11 +732,11 @@ public class GeTaMapper extends PepperMapperImpl implements PepperMapper {
 	}
 
 	/**
-	 * TODO: Description
-	 * 
-	 * @param filePath
+	 * Checks if a file exists and is not empty.
 	 *
-	 * @param fileToCheck
+	 * @param fileToCheck The file to check
+	 * @param filePath The path of the file to check
+	 * @return `true` iff the file exists and is not empty, else `false`.
 	 */
 	private boolean checkFileExists(File fileToCheck, String filePath) {
 		String name = fileToCheck.getName();

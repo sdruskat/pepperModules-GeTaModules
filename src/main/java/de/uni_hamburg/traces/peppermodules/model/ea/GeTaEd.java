@@ -28,7 +28,7 @@ import de.uni_hamburg.traces.peppermodules.GeTaMapper;
 import de.uni_hamburg.traces.peppermodules.model.tea.GeTaLT;
 
 /**
- * TODO Description
+ *  An object representation of an `Ed` JSON object from a GeTa *EA.json file.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
@@ -37,6 +37,11 @@ public class GeTaEd {
 	
 	private List<GeTaLT> lt;
 
+	/**
+	 * Constructor mapping to JSON.
+	 * 
+	 * @param lt
+	 */
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public GeTaEd(@JsonProperty(GeTaMapper.LT) List<GeTaLT> lt) {

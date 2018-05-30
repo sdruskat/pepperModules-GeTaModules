@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import de.uni_hamburg.traces.peppermodules.GeTaMapper;
 
 /**
- * TODO Description
+ * An object representation of a JSON object from a GeTa *NEA.ann annotation file.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
@@ -35,6 +35,12 @@ public class GeTaRef {
 	private String wid;
 	private List<String> tid;
 
+	/**
+	 * Constructor creating a JSON representation.
+	 * 
+	 * @param wid
+	 * @param tid
+	 */
 	public GeTaRef(@JsonProperty(GeTaMapper.WId) String wid,
 			@JsonProperty(GeTaMapper.TID) List<String> tid) {
 		this.wid = wid;

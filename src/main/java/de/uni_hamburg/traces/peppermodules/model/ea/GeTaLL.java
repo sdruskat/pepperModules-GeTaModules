@@ -35,6 +35,12 @@ public class GeTaLL {
 	private String lat;
 	private String tid;
 
+	/**
+	 * Constructor creating a JSON representation.
+	 * 
+	 * @param lat
+	 * @param tid
+	 */
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public GeTaLL(@JsonProperty(GeTaMapper.LAT) String lat,

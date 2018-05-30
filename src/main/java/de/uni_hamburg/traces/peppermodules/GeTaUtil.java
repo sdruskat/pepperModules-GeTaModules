@@ -24,7 +24,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * TODO Description
+ * A static util class for the GeTaModules.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
@@ -32,22 +32,22 @@ import org.apache.commons.lang3.StringUtils;
 public class GeTaUtil {
 
 	/**
-	 * TODO: Description
+	 * Joins a list of strings.
 	 *
-	 * @param sid
-	 * @return
+	 * @param list The list of string to join
+	 * @return The joined string
 	 */
 	public static String join(List<String> list) {
 		return StringUtils.join(list, ",");
 	}
 
 	/**
-	 * TODO: Description
+	 * Tests whether a string represents a valid {@link java.net.URL}.
 	 *
-	 * @param rawValue
-	 * @return
+	 * @param rawValue THe raw string to check for validity
+	 * @return Whether the string represents a valid {@link java.net.URL}
 	 */
-	public static boolean testURL(String rawValue) {
+	public static boolean isValidJavaNetURL(String rawValue) {
 		if (rawValue != null) {
 			try {
 				new URL(rawValue);

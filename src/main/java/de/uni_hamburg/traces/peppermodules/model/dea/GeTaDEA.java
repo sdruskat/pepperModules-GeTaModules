@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
@@ -30,7 +29,7 @@ import com.google.common.collect.Iterables;
 import de.uni_hamburg.traces.peppermodules.GeTaMapper;
 
 /**
- * An object representation of a JSON object from a GeTa *DEA.ann annotation file.
+ * An object representation of a JSON object from a GeTa *DEA.ann* annotation file.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
@@ -45,13 +44,23 @@ public class GeTaDEA {
 	/**
 	 * This is a constructor working as a {@link JsonCreator}, i.e.,
 	 * the mapping of {@link GeTaTEA} objects starts here.
-	 * 
+
 	 * @param id
-	 * @param tokl
-	 * @param m
+	 * @param wb
+	 * @param we
+	 * @param nri
+	 * @param nr
+	 * @param le
+	 * @param g
+	 * @param c
+	 * @param dp
+	 * @param na
+	 * @param cr
+	 * @param hwb
+	 * @param hwe
+	 * @param dc
 	 */
 	@JsonCreator
-	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
 	public GeTaDEA(@JsonProperty(GeTaMapper.Id) String id, 
 			@JsonProperty(GeTaMapper.WB) String wb,
 			@JsonProperty(GeTaMapper.WE) String we, 

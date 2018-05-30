@@ -32,7 +32,7 @@ import de.uni_hamburg.traces.peppermodules.GeTaMapper;
 import de.uni_hamburg.traces.peppermodules.GeTaUtil;
 
 /**
- * TODO Description
+ * Bean representing a `Fidalword` object.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
@@ -52,6 +52,20 @@ public class GeTaFidalword {
 
 	private final Map<String, String> annotations = new HashMap<>();
 
+	/**
+	 * Constructor creating a JSON representation.
+	 * 
+	 * @param id
+	 * @param fid
+	 * @param fided
+	 * @param tr
+	 * @param sid
+	 * @param qid
+	 * @param tid
+	 * @param ne
+	 * @param comm
+	 * @param fc
+	 */
 	@JsonCreator
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public GeTaFidalword(@JsonProperty(GeTaMapper.Id) String id, 

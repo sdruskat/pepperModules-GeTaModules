@@ -21,7 +21,6 @@ package de.uni_hamburg.traces.peppermodules.model.tea;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import de.uni_hamburg.traces.peppermodules.GeTaMapper;
@@ -37,8 +36,13 @@ public class GeTaM {
 	private Boolean ne;
 	private List<GeTaLT> lt;
 
+	/**
+	 * Constructor creating a JSON representation.
+	 * 
+	 * @param ne
+	 * @param lt
+	 */
 	@JsonCreator
-	@JsonIgnoreProperties(ignoreUnknown = true) // FIXME: Delete once everything is included!
 	public GeTaM(@JsonProperty(GeTaMapper.ne) Boolean ne,
 			@JsonProperty(GeTaMapper.LT) List<GeTaLT> lt) {
 		this.ne = ne;
